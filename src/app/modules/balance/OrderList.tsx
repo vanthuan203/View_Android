@@ -32,11 +32,13 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   const [list_orderhistory,setList_OrderHistory]=useState([{
     id: 0,
     balance:0,
-    time:"",
-    totalbalance:0,
+    add_time:"",
+    total_blance:0,
     user:"",
     note:"",
-    service:0
+    service:0,
+    platform:"",
+    task:"",
   }])
   const [isMobile, setIsMobile] = useState(false);
   const dispatch = useDispatch()
@@ -59,46 +61,28 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   const [keyusertrue, setKeyUserTrue] = useState(0)
   const [groupName, setGroupName] = useState('')
   const [nameExport, setNameExport] = useState('')
-  let [totaltimebuffedorder, setTotalTimeBuffedOrder] = useState(0)
-  let [totaltimebuffedordershow, setTotalTimeBuffedOrderShow] = useState(0)
-  let [totaldorder, setTotalOrder] = useState(0)
-  let [totaldordershow, setTotalOrderShow] = useState(0)
-  let [totaldordervn, setTotalOrderVN] = useState(0)
-  let [totaldorderkr, setTotalOrderKR] = useState(0)
-  let [totaldorderVnshow, setTotalOrderVNShow] = useState(0)
-  let [totaldorderKrshow, setTotalOrderKRShow] = useState(0)
-  let [totaladd, setTotalAdd] = useState(0)
-  let [totaladdshow, setTotalAddShow] = useState(0)
-  let [totaladdvn, setTotalAddVN] = useState(0)
-  let [totaladdkr, setTotalAddKR] = useState(0)
-  let [totaladdvnshow, setTotalAddVNShow] = useState(0)
-  let [totaladdkrshow, setTotalAddKRShow] = useState(0)
-  let [totalsub, setTotalSub] = useState(0)
-  let [totalsubshow, setTotalSubShow] = useState(0)
-  let [totalsubvn, setTotalSubVN] = useState(0)
-  let [totalsubkr, setTotalSubKR] = useState(0)
-  let [totalsubvnshow, setTotalSubVNShow] = useState(0)
-  let [totalsubkrshow, setTotalSubKRShow] = useState(0)
+
+  let [total_Order, setTotal_Order] = useState(0)
+  let [total_Order_Show, setTotal_Order_Show] = useState(0)
+  let [total_Add, setTotal_Add] = useState(0)
+  let [total_Add_Show, setTotal_Add_Show] = useState(0)
+  let [total_Refund, setTotal_Refund] = useState(0)
+  let [total_Refund_Show, setTotal_Refund_Show] = useState(0)
   let [useEff, setuseEff] = useState(0)
   const role: string =
     (useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual) as string) || ''
   const user: string =
       (useSelector<RootState>(({auth}) => auth.user?.username, shallowEqual) as string) || ''
-  const groups: Group[] =
-    (useSelector<RootState>(({orders}) => orders.groups, shallowEqual) as Group[]) || []
-  const currentGroup: Group =
-    (useSelector<RootState>(({orders}) => orders.currentGroup, shallowEqual) as Group) || undefined
-  const [list_user,setList_User]=useState([{
+  const [list_User,setList_User]=useState([{
     id:"0000000000",
     user:"All User"
   },])
 
   async function getcounttimeorder() {
-    let  requestUrl = API_URL+'auth/getalluser';
+    let  requestUrl = API_URL+'user/get_List_User';
     const response = await fetch(requestUrl, {
       method: 'get',
       headers: new Headers({
-        'Authorization': '1',
         'Content-Type': 'application/x-www-form-urlencoded'
       })
     });
@@ -110,8 +94,8 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
         id: randomString(10),
         user: arrlist[i]
       }
-      setList_User([...list_user, orderitem])
-      list_user.push(orderitem)
+      setList_User([...list_User, orderitem])
+      list_User.push(orderitem)
     }
   }
   const handleWindowResize = () => {
@@ -131,25 +115,17 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
       setNameExport('$$'+(keydatestart!=NaN?new Date(keydatestart).toLocaleDateString('vn-VN'):"ALLDayStart")+'&&'+(keydatestart!=NaN?new Date(keydatestart).toLocaleDateString('vn-VN'):"ALLDayEnd"))
 
     }
-    totaldordershow=totaldorder
-    setTotalOrderShow(totaldordershow)
-    setTotalOrder(0)
+    total_Order_Show=total_Order
+    setTotal_Order_Show(total_Order_Show)
+    setTotal_Order(0)
 
-    totaladdvnshow=totaladdvn
-    setTotalAddVNShow(totaladdvnshow)
-    setTotalAddVN(0)
+    total_Add_Show=total_Add
+    setTotal_Add_Show(total_Add_Show)
+    setTotal_Add(0)
 
-    totaladdkrshow=totaladdkr
-    setTotalAddKRShow(totaladdkrshow)
-    setTotalAddKR(0)
-
-    totalsubvnshow=totalsubvn
-    setTotalSubVNShow(totalsubvnshow)
-    setTotalSubVN(0)
-
-    totalsubkrshow=totalsubkr
-    setTotalSubKRShow(totalsubkrshow)
-    setTotalSubKR(0)
+    total_Refund_Show=total_Refund
+    setTotal_Refund_Show(total_Refund_Show)
+    setTotal_Refund(0)
 
 
     if(startDate==null || endDate==null){
@@ -165,22 +141,6 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
       keydate=1
       setKeyDate(keydate)
       }
-    totaldordershow=totaldorder
-    setTotalOrderShow(totaldordershow)
-    totaldorder=0
-    totaldorderVnshow=totaldordervn
-    setTotalOrderVNShow(totaldorderVnshow)
-    totaldordervn=0
-    totaldorderKrshow=totaldorderkr
-    setTotalOrderKRShow(totaldorderKrshow)
-    totaldorderkr=0
-    totaladdshow=totaladd
-    setTotalAddShow(totaladdshow)
-    totaladd=0
-    totalsubshow=totalsub
-    setTotalSubShow(totalsubshow)
-    totalsub=0
-    setTotalTimeBuffedOrder(0)
     if(useEff<=1){
       getcounttimeorder()
     }
@@ -210,26 +170,20 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
             <div className="col-lg-12 col-sm-12 c-order__header">
               <p style={{fontSize:11,marginTop:5}} className="fw-bold c-order__list">
                 <span  className='fw-bolder fs-3 mb-1'>
-                  <span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgb(255,255,255)",marginLeft:5}}>{isMobile==false?( "Giao dịch "+totaldordershow ):"Total"}  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:2,padding:3}}>{format1((totaldorderVnshow))} </span><span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)",marginLeft:2,padding:3}}>{format1((totaldordershow-totaldorderVnshow-totaldorderKrshow))}</span>
-                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(3,37,80,0.97)",marginLeft:2,padding:3}}>{format1((totaldorderKrshow))}</span></span>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgb(255,255,255)",marginLeft:5}}>{"Total " +total_Order_Show}</span>
+                  </span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(20,122,178,0.66)",marginLeft:5}}>{"Revenue $"+(-total_Add_Show-total_Refund_Show).toFixed(Number.isInteger(total_Add_Show-total_Refund_Show)==true?0:2)}
+                  </span>
                 </span>
                 <span  className='fw-bolder fs-3 mb-1'>
-                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(9,9,9,0.68)",marginLeft:5}}>{isMobile==false?"Doanh thu ":"Revenue "}
-                  <span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgba(255,255,255,0.97)",marginLeft:2,padding:3}}>{(-totalsubshow-totaladdshow).toFixed(-totalsubshow-totaladdshow==0?0:2)}$</span></span>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:5}}>{"Charge $"+(-total_Add_Show).toFixed(Number.isInteger(total_Add_Show)==true?0:2)}
+                  </span>
                 </span>
-
-              </p>
-              <p style={{fontSize:11,marginTop:5}} className="fw-bold c-order__list">
-                <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(252,251,251,0.68)",marginLeft:5,marginTop:3}}>{isMobile==false?"Tổng chi ":""}<span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(129,207,253,0.66)",marginLeft:2,padding:3}}>{(-totalsubshow).toFixed(totalsubshow==0?0:2)}$</span>
-                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:2,padding:3}}>{(-totalsubvnshow).toFixed(totalsubvnshow==0?0:2)}</span>
-                    <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)",marginLeft:2,padding:3}}>{((-totalsubshow+totalsubvnshow+totalsubkrshow).toFixed((-totalsubshow+totalsubvnshow+totalsubkrshow)==0?0:2))}</span>
-                    <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(3,37,80,0.97)",marginLeft:2,padding:3}}>{(-totalsubkrshow.toFixed(totalsubkrshow==0?0:2))}</span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgb(9,9,9)",marginLeft:5}}>{"Refund $"+(total_Refund_Show).toFixed(Number.isInteger(total_Refund_Show)==true?0:2)}
                   </span>
-                <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(248,248,248,0.97)",marginLeft:5,marginTop:3}}>{isMobile==false?"Tổng hoàn ":""}<span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(250,185,103,0.97)",marginLeft:2,padding:3}}>{(totaladdshow).toFixed(totaladdshow==0?0:2)}$</span>
-                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:2,padding:3}}>{(totaladdvnshow).toFixed(totaladdvnshow==0?0:2)}</span>
-                    <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)",marginLeft:2,padding:3}}>{((totaladdshow-totaladdvnshow-totaladdkrshow).toFixed((totaladdshow-totaladdvnshow-totaladdkrshow)==0?0:2))}</span>
-                    <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(3,37,80,0.97)",marginLeft:2,padding:3}}>{(totaladdkrshow.toFixed(totaladdkrshow==0?0:2))}</span>
-                  </span>
+                </span>
               </p>
             </div>
           </div>
@@ -272,7 +226,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                      value={keyuser}
               >
                 {
-                  list_user.map((item, index) => {
+                  list_User.map((item, index) => {
                     return(
                         <option key={item.user.indexOf("All User")>=0?"":item.user} value={item.user.indexOf("All User")>=0?"":item.user}>
                           {item.user}</option>)
@@ -292,13 +246,13 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
             <thead>
               <tr className='fw-bolder text-muted'>
                 <th className='min-w-10px text-sm'>
-                  <span style={{fontSize:12,color:"black",marginLeft:5}} className='text-sm'>STT</span>
+                  <span style={{fontSize:12,color:"black",marginLeft:5}} className='text-sm'>Platform</span>
                 </th>
                 <th className='min-w-10px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>Time</span>
                 </th>
                 <th className='min-w-10px text-sm'>
-                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Balance Change</span>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Charge</span>
                 </th>
                 <th className='min-w-10px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>Balance</span>
@@ -321,58 +275,30 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                 orders.map((order: OrderModel, index: number) => {
                   if (keyusertrue==0&&keydate==0) {
                     if(index===0){
-                      totaldorder=1
+                      total_Order=1
                       if(order.balance>0){
-                        totaladd=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totaladdkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totaladdvn=order.balance
-                        }
-
+                        total_Refund=order.balance
                       }else{
-                        totalsub=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totalsubkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totalsubvn=order.balance
-                        }
+                        total_Add=order.balance
                       }
                     }else{
-                      totaldorder=totaldorder+1
+                      total_Order=1+total_Order
                       if(order.balance>0){
-                        totaladd=totaladd+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totaladdkr=order.balance+totaladdkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totaladdvn=order.balance+totaladdvn
-                        }
+                        total_Refund=order.balance+total_Refund
                       }else{
-                        totalsub=totalsub+order.balance
-                        console.log(totalsubvn)
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totalsubkr=order.balance+totalsubkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totalsubvn=order.balance+totalsubvn
-                        }
+                        total_Add=order.balance+total_Add
                       }
                     }
                     let orderitem = {
-                      id: totaldorder,
+                      id:order.id,
                       balance: order.balance,
-                      totalbalance:order.totalbalance,
-                      time: new Date(order.time).toLocaleDateString('vn-VN') +" "+ new Date(order.time).toLocaleTimeString('vn-VN'),
+                      total_blance:order.total_blance,
+                      add_time: new Date(order.add_time).toLocaleDateString('vn-VN') +" "+ new Date(order.add_time).toLocaleTimeString('vn-VN'),
                       user:order.user,
                       note:order.note,
-                      service:order.service
+                      service:order.service,
+                      platform:order.platform,
+                      task:order.task
 
                     }
                     list_orderhistory.push(orderitem)
@@ -386,57 +312,30 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                     )
                   }else if(order.user.indexOf(keyuser)>=0 &&keyusertrue==1&&keydate==0){
                     if(index===0){
-                      totaldorder=1
+                      total_Order=1
                       if(order.balance>0){
-                        totaladd=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totaladdkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totaladdvn=order.balance
-                        }
-
+                        total_Refund=order.balance
                       }else{
-                        totalsub=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totalsubkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totalsubvn=order.balance
-                        }
+                        total_Add=order.balance
                       }
                     }else{
-                      totaldorder=totaldorder+1
+                      total_Order=1+total_Order
                       if(order.balance>0){
-                        totaladd=totaladd+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totaladdkr=order.balance+totaladdkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totaladdvn=order.balance+totaladdvn
-                        }
+                        total_Refund=order.balance+total_Refund
                       }else{
-                        totalsub=totalsub+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totalsubkr=order.balance+totalsubkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totalsubvn=order.balance+totalsubvn
-                        }
+                        total_Add=order.balance+total_Add
                       }
                     }
                     let orderitem = {
-                      id: totaldorder,
+                      id:order.id,
                       balance: order.balance,
-                      totalbalance:order.totalbalance,
-                      time: new Date(order.time).toLocaleDateString('vn-VN') +" "+ new Date(order.time).toLocaleTimeString('vn-VN'),
+                      total_blance:order.total_blance,
+                      add_time: new Date(order.add_time).toLocaleDateString('vn-VN') +" "+ new Date(order.add_time).toLocaleTimeString('vn-VN'),
                       user:order.user,
                       note:order.note,
-                      service:order.service
+                      service:order.service,
+                      platform:order.platform,
+                      task:order.task
 
                     }
                     list_orderhistory.push(orderitem)
@@ -448,59 +347,32 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                             item={order}
                         />
                     )
-                  }else if((keydatestart<=order.time&&order.time<=keydateend+24*60*60*1000-1)&&keyusertrue==0&&keydate==1){
+                  }else if((keydatestart<=order.add_time&&order.add_time<=keydateend+24*60*60*1000-1)&&keyusertrue==0&&keydate==1){
                     if(index===0){
-                      totaldorder=1
+                      total_Order=1
                       if(order.balance>0){
-                        totaladd=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totaladdkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totaladdvn=order.balance
-                        }
-
+                        total_Refund=order.balance
                       }else{
-                        totalsub=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totalsubkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totalsubvn=order.balance
-                        }
+                        total_Add=order.balance
                       }
                     }else{
-                      totaldorder=totaldorder+1
+                      total_Order=1+total_Order
                       if(order.balance>0){
-                        totaladd=totaladd+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totaladdkr=order.balance+totaladdkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totaladdvn=order.balance+totaladdvn
-                        }
+                        total_Refund=order.balance+total_Refund
                       }else{
-                        totalsub=totalsub+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totalsubkr=order.balance+totalsubkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totalsubvn=order.balance+totalsubvn
-                        }
+                        total_Add=order.balance+total_Add
                       }
                     }
                     let orderitem = {
-                      id: totaldorder,
+                      id:order.id,
                       balance: order.balance,
-                      totalbalance:order.totalbalance,
-                      time: new Date(order.time).toLocaleDateString('vn-VN') +" "+ new Date(order.time).toLocaleTimeString('vn-VN'),
+                      total_blance:order.total_blance,
+                      add_time: new Date(order.add_time).toLocaleDateString('vn-VN') +" "+ new Date(order.add_time).toLocaleTimeString('vn-VN'),
                       user:order.user,
                       note:order.note,
-                      service:order.service
+                      service:order.service,
+                      platform:order.platform,
+                      task:order.task
 
                     }
                     list_orderhistory.push(orderitem)
@@ -514,60 +386,33 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                     )
                   }
                   else if(order.user.indexOf(keyuser)>=0 &&keyusertrue==1&&keydate==1&&
-                      (keydatestart<=order.time&&order.time<=keydateend+24*60*60*1000-1)
+                      (keydatestart<=order.add_time&&order.add_time<=keydateend+24*60*60*1000-1)
                   ){
                     if(index===0){
-                      totaldorder=1
+                      total_Order=1
                       if(order.balance>0){
-                        totaladd=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totaladdkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totaladdvn=order.balance
-                        }
-
+                        total_Refund=order.balance
                       }else{
-                        totalsub=order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1
-                          totalsubkr=order.balance
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1
-                          totalsubvn=order.balance
-                        }
+                        total_Add=order.balance
                       }
                     }else{
-                      totaldorder=totaldorder+1
+                      total_Order=1+total_Order
                       if(order.balance>0){
-                        totaladd=totaladd+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totaladdkr=order.balance+totaladdkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totaladdvn=order.balance+totaladdvn
-                        }
+                        total_Refund=order.balance+total_Refund
                       }else{
-                        totalsub=totalsub+order.balance
-                        if(order.geo.indexOf("kr")>=0){
-                          totaldorderkr=1+totaldorderkr
-                          totalsubkr=order.balance+totalsubkr
-                        }else if(order.geo.indexOf("vn")>=0){
-                          totaldordervn=1+totaldordervn
-                          totalsubvn=order.balance+totalsubvn
-                        }
+                        total_Add=order.balance+total_Add
                       }
                     }
                     let orderitem = {
-                      id: totaldorder,
+                      id:order.id,
                       balance: order.balance,
-                      totalbalance:order.totalbalance,
-                      time: new Date(order.time).toLocaleDateString('vn-VN') +" "+ new Date(order.time).toLocaleTimeString('vn-VN'),
+                      total_blance:order.total_blance,
+                      add_time: new Date(order.add_time).toLocaleDateString('vn-VN') +" "+ new Date(order.add_time).toLocaleTimeString('vn-VN'),
                       user:order.user,
                       note:order.note,
-                      service:order.service
+                      service:order.service,
+                      platform:order.platform,
+                      task:order.task
 
                     }
                     list_orderhistory.push(orderitem)

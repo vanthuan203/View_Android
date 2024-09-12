@@ -50,7 +50,7 @@ const ProxySettingList: React.FC<Props> = ({ className, accounts }) => {
         <div className="page-header__content">
           <div className="align-items-center row" style={{margin:10}}>
             <div className="col-lg-12 col-sm-12 c-order__header">
-              <span  className='fw-bolder fs-3 mb-1'>Cài đặt Proxy</span>
+              <span  className='fw-bolder fs-3 mb-1'>Platforms</span>
             </div>
           </div>
         </div>
@@ -65,13 +65,12 @@ const ProxySettingList: React.FC<Props> = ({ className, accounts }) => {
             {/* begin::Table head */}
             <thead>
               <tr className='fw-bolder text-muted'>
-                <th className='min-w-100px'>Option</th>
-                <th className='min-w-100px'>Username</th>
-                <th className='min-w-100px'>Password</th>
-                <th className='min-w-100px'>Crontab</th>
-                <th className='min-w-100px'>Total_Hv6</th>
-                <th className='min-w-100px'>Total_Sv6</th>
-                <th className='min-w-100px'>TimeUpdate</th>
+                <th className='min-w-100px'>Platform</th>
+                <th className='min-w-100px'>Max Sub/Follow</th>
+                <th className='min-w-100px'>Max Like</th>
+                <th className='min-w-100px'>Max Activity</th>
+                <th className='min-w-100px'>Max Day Activity</th>
+                <th className='min-w-100px'>Update Time</th>
               </tr>
             </thead>
             {/* end::Table head */}

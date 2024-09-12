@@ -35,13 +35,13 @@ const OrderItem: React.FC<Props> = ({ item, showEdit, index }) => {
     //const increase = item.current_view - item.start_view
     return (
         <tr style={{margin:100,backgroundColor:item.balance>0?"rgba(252,226,207,0.62)":"#ffffff"}}>
-            <td className='w-25px'>
-                <span style={{marginLeft:5}}  className='text-muted fw-bold text-muted d-block text-sm'>{index+1}</span>
+            <td>
+                <img style={{float:"left",marginRight:5,width:15,height:15,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/svg/social-logos/'+item.platform+'.svg')} alt='metronic' />
             </td>
             <td>
                 <span  >
                     <text style={{fontSize:12,fontWeight:"bold"}}>
-                    {new Date(item.time).toLocaleDateString('vn-VN') +" "+ new Date(item.time).toLocaleTimeString('vn-VN')}
+                    {new Date(item.add_time).toLocaleDateString('vn-VN') +" "+ new Date(item.add_time).toLocaleTimeString('vn-VN')}
                     </text>
                 </span>
 
@@ -56,25 +56,27 @@ const OrderItem: React.FC<Props> = ({ item, showEdit, index }) => {
             <td>
                 <span >
                     <text style={{fontSize:12,fontWeight:"bold"}}>
-                        {item.totalbalance.toPrecision()}$
+                        {item.total_blance.toPrecision()}$
                     </text>
                             </span>
             </td>
             <td>
                 <span >
                     <text style={{fontSize:12,fontWeight:"bold",color:item.service>1000?"rgba(3,37,80,0.97)":(item.service<600?"rgba(34,126,231,0.97)":"#b7080f")}}>
-                        {item.service}
+                        {item.service+ " "}
                     </text>
                             </span>
             </td>
             {role!="ROLE_USER"&&<td>
                 <span >
                     <text style={{fontSize:12,fontWeight:"bold"}}>
-                        {item.user}
+                        {item.user.replace("@gmail.com","")}
                     </text>
                             </span>
             </td>}
-            <td >
+            <td >    <span style={{color:'white',fontSize:10,padding:3,backgroundColor:"rgba(9,9,9,0.68)",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                            {item.task.toUpperCase()}
+                        </span>
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
                                         {item.note}

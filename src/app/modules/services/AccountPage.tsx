@@ -10,8 +10,8 @@ const AccountPage: React.FC = () => {
   const dispatch = useDispatch()
   const [option, setOption] = useState("view")
 
-  const accounts: AccountModel[] = useSelector<RootState>(({services}) => services.accounts, shallowEqual) as AccountModel[] || []
-  const currentAccount: AccountModel = useSelector<RootState>(({services}) => services.currentAccount, shallowEqual) as AccountModel || undefined
+  const services: AccountModel[] = useSelector<RootState>(({services}) => services.services, shallowEqual) as AccountModel[] || []
+  const currentService: AccountModel = useSelector<RootState>(({services}) => services.currentService, shallowEqual) as AccountModel || undefined
   const [refresh, setRefresh] = useState(true)
   useEffect(() => {
     if(refresh==true){
@@ -32,10 +32,10 @@ const AccountPage: React.FC = () => {
           </a>
         </div>
         <div className='col-xl-12' style={{margin:0}}>
-          <UserList accounts={accounts} className='card-xxl-stretch mb-5 mb-xl-12' />
+          <UserList services={services} className='card-xxl-stretch mb-5 mb-xl-12' />
         </div>
         {
-         currentAccount&&<EditModal key={currentAccount?.service} item={currentAccount} />
+            currentService&&<EditModal key={currentService?.service_id} item={currentService} />
         }
       </div>
     </>

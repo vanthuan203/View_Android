@@ -65,7 +65,7 @@ const WidgetsPage: React.FC = () => {
             // Thêm sự kiện lắng nghe để kiểm tra kích thước cửa sổ khi cửa sổ thay đổi
             window.addEventListener('resize', handleWindowResize);
             if(window.innerWidth < 800){
-                getnow()
+                //getnow()
             }
         }
 
@@ -89,7 +89,7 @@ const WidgetsPage: React.FC = () => {
             // Thêm sự kiện lắng nghe để kiểm tra kích thước cửa sổ khi cửa sổ thay đổi
             window.addEventListener('resize', handleWindowResize);
             if(window.innerWidth < 800){
-                get5M()
+                //get5M()
             }
         }
 
@@ -110,7 +110,7 @@ const WidgetsPage: React.FC = () => {
           </div>
       </div>
       {
-        currentOrder && <EditModal key={currentOrder?.videoid} item={currentOrder}  />
+        currentOrder && <EditModal key={currentOrder?.order_id} item={currentOrder}  />
       }
     </>
   )

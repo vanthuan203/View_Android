@@ -9,7 +9,6 @@ import {
 } from "reactstrap"
 import { useSelector, shallowEqual } from 'react-redux'
 import { RootState } from 'setup'
-import { Group } from '../../models/Order'
 type Props = {
   show: boolean
   close: () => void
@@ -20,7 +19,6 @@ const AddModal: React.FC<Props> = ({ show, close }) => {
   const username: string = useSelector<RootState>(({ auth }) => auth.user?.username, shallowEqual) as string || ""
   const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
   const adding: boolean = useSelector<RootState>(({ orderhistory }) => orderhistory.adding, shallowEqual) as boolean || false
-  const groups: Group[] = useSelector<RootState>(({ orderhistory }) => orderhistory.groups, shallowEqual) as Group[] || []
 
 
   const dispatch = useDispatch()
@@ -67,23 +65,7 @@ const AddModal: React.FC<Props> = ({ show, close }) => {
       alert("phần trăm xem video không đúng")
       return
     }
-    dispatch(actions.addOrderRequest({
-      videoid,
-      homerate,
-      note,
-      directrate,
-      commentrate,
-      mobilerate,
-      searchrate,
-      enabled,
-      maxthreads,
-      viewstart,
-      likerate,
-      suggestrate,
-      timebuff,
-      optionbuff,user
-    }))
-
+    
   }
 
   useEffect(() => {

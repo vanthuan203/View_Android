@@ -1,48 +1,53 @@
 export interface OrderModel {
-  orderid:number,
-  videoid: string,
-  videotitle: string,
+  order_id:number,
+  order_key: string,
+  order_link: string,
+  total_thread: number,
+  thread: number,
+  insert_time: number,
+  start_time: number,
+  update_time: number,
+  update_current_time:number,
+  start_count: number,
   total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  insertdate: number,
-  enddate: number,
+  quantity: number,
+  check_count: number,
+  current_count: number,
+  service_id: number,
+  charge: number,
   note: string,
-  view24h:number,
-  viewtotal:number,
-  duration:number,
-  user:string,
-  price:number,
-  service:number,
-  vieworder:number,
+  username: string,
+  task: string,
+  platform: string,
+  bonus:number,
   priority:number,
   checked?:boolean
 }
 
 export interface OrderModelChecked {
-  videoid: string,
+  order_id: number,
   id:number
 }
 
 export interface OrderUpdateForm {
-  orderid:number,
-  videoid: string,
-  videotitle: string,
+  order_id:number,
+  order_key: string,
+  total_thread: number,
+  thread: number,
+  insert_time: number,
+  start_time: number,
+  update_time: number,
+  update_current_time:number,
+  start_count: number,
   total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  insertdate: number,
-  enddate: number,
+  quantity: number,
+  service_id: number,
+  charge: number,
   note: string,
-  view24h:number,
-  viewtotal:number,
-  service:number,
-  vieworder:number,
-  user:string
+  username: string,
+  task: string,
+  platform: string,
+  bonus:number,
   priority:number,
 }
 
@@ -54,8 +59,7 @@ export interface OrderForm {
   timebuff:number,
   service:number,
   vieworder:number,
-  user:string,
-  priority:number,
+  user:string
 }
 export interface OrderFormManual {
   orderid:number,
@@ -81,7 +85,6 @@ export interface OrderFormManual {
   optionbuff:number,
   service:number,
   vieworder:number,
-  priority:number,
   user:string
 }
 

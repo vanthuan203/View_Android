@@ -5,7 +5,6 @@ import {Popover, Transition} from '@headlessui/react'
 import React, {Fragment, useEffect, useState} from 'react'
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
 import AddManualModal from './modals/AddManualModal'
-import AddModal from './modals/AddModal'
 import EditMulti from './modals/EditMulti'
 import {KTSVG, toAbsoluteUrl} from '../../../_metronic/helpers'
 import OrderItem from './components/OrderItem'
@@ -15,8 +14,6 @@ import {FormGroup, Input, Label} from "reactstrap";
 import {randomString} from "react-inlinesvg/lib/helpers";
 import {Spinner} from "react-bootstrap-v5";
 import BhManualModal from "./modals/BhManualModal";
-import CheckBhManualModal from "./modals/CheckBhManualModal";
-import CheckBhVideoIdManualModal from "./modals/CheckBhVideoIdManualModal";
 
 type Props = {
   done:number,
@@ -27,49 +24,49 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   const dispatch = useDispatch()
   const API_URL = process.env.REACT_APP_API_URL
   function format1(n:number) {
-    return n.toFixed(0).replace(/./g, function(c, i, a) {
-      return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
-    });
+    if(n>=0){
+      return n.toFixed(0).replace(/./g, function(c, i, a) {
+        return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
+      });
+    }else{
+      return 0;
+    }
+
   }
+  const [isMobile, setIsMobile] = useState(false);
   const [Checked, setChecked] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [refresh, setRefresh] = useState(false)
   const [showAdd, setShowAdd] = useState(false)
   const [key, setKey] = useState("")
   const [keyrate, setKeyRate] = useState(0)
+  const [keyplatform, setKeyPlatform] = useState("")
   const [keyuser, setKeyUser] = useState("")
   const [keytrue, setKeyTrue] = useState(0)
   const [keyratetrue, setKeyRateTrue] = useState(0)
+  const [keyplatformtrue, setKeyPlatformTrue] = useState(0)
   const [keyusertrue, setKeyUserTrue] = useState(0)
   const [showAddManual, setShowAddManual] = useState(false)
+  const [showManual, setShowManual] = useState(false)
   const [showBhManual, setShowBhManual] = useState(false)
-  const [showCheckBhManual, setShowCheckBhManual] = useState(false)
-  const [showCheckBhVideoIdManual, setShowCheckBhVideoIdManual] = useState(false)
   const [showEditMulti, setShowEditMulti] = useState(false)
-  let [totaltimeorder, setTotalTimeOrder] = useState(0)
-  let [totaltimeordershow, setTotalTimeOrderShow] = useState(0)
-  let [totaltimebuffedorder, setTotalTimeBuffedOrder] = useState(0)
-  let [totaltimebuffedordershow, setTotalTimeBuffedOrderShow] = useState(0)
-  let [totaldorder, setTotalOrder] = useState(0)
-  let [totaldordershow, setTotalOrderShow] = useState(0)
-  let [totalmoney, setTotalMoney] = useState(0)
-  let [totalmoneyshow, setTotalMoneyShow] = useState(0)
-  let [totalmoneyUS, setTotalMoneyUS] = useState(0)
-  let [totalmoneyUSshow, setTotalMoneyUSShow] = useState(0)
+  let [total_Order_Running, setTotal_Order_Running] = useState(0)
+  let [total_Order_Running_Show, setTotal_Order_Running_Show] = useState(0)
+  let [total_Buff, setTotal_Buff] = useState(0)
+  let [total_Buff_Show, setTotal_Buff_Show] = useState(0)
+  let [total_Quantity, setTotal_Quantity] = useState(0)
+  let [total_Quantity_Show, setTotal_Quantity_Show] = useState(0)
+  let [total_Charge, setTotal_Charge] = useState(0)
+  let [total_Charge_Show, setTotal_Charge_Show] = useState(0)
 
-  let [totalthreadset, setTotalThreadSet] = useState(0)
-  let [totalthreadsetshow, setTotalThreadSetShow] = useState(0)
-  let [totalthread, setTotalThread] = useState(0)
-  let [totalthreadshow, setTotalThreadShow] = useState(0)
-  let [totalvn, setTotalVn] = useState(0)
-  let [totalVnshow, setTotalVnShow] = useState(0)
-  let [totalUs, setTotalUs] = useState(0)
-  let [totalUsshow, setTotalUsShow] = useState(0)
-
+  let [total_Thread_Set, setTotal_Thread_Set] = useState(0)
+  let [total_Thread_Set_Show, setTotal_Thread_Set_Show] = useState(0)
+  let [total_Thread, setTotal_Thread] = useState(0)
+  let [total_Thread_Show, setTotal_Thread_Show] = useState(0)
+  
   let [useEff, setuseEff] = useState(0)
   const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
   const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
-  const price: number = useSelector<RootState>(({ auth }) => auth.user?.price, shallowEqual) as number || 0
-  const bonus: number = useSelector<RootState>(({ auth }) => auth.user?.bonus, shallowEqual) as number || 0
   const vip: number = useSelector<RootState>(({ auth }) => auth.user?.vip, shallowEqual) as number || 0
   let role: string =
       (useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual) as string) || ''
@@ -78,50 +75,46 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   }
   const user: string =
       (useSelector<RootState>(({auth}) => auth.user?.username, shallowEqual) as string) || ''
-  const groups: Group[] =
-      (useSelector<RootState>(({orders}) => orders.groups, shallowEqual) as Group[]) || []
-  const currentGroup: Group =
-      (useSelector<RootState>(({orders}) => orders.currentGroup, shallowEqual) as Group) || undefined
-  let sumtime=0;
-  let sumorder=0;
-  let summoney=0;
-  let summoneyUS=0;
-  let sumthreadset=0;
-  let sumthread=0;
-  let sumvn=0;
-  let sumus=0;
-  let sumtimedone=0;
+
   const arr:string[]=[]
-  const [list_user,setList_User]=useState([{
+  const [list_User,setList_User]=useState([{
     id:"0000000000",
-    user:"All User"
+    user:"User"
   },])
-  const [list_video,setList_Video]=useState([{
+  const [listplatform,setlistPlatform]=useState([{
+    platform:"Platform"
+  },])
+  const [list_OrderId,setList_OrderId]=useState([{
     id:0,
-    videoid:"",
+    order_id:0,
   },])
-  orders.forEach(item=>{
-    sumthreadset=sumthreadset +item.maxthreads;
-    sumthread=sumthread+item.total;
-    sumtime=sumtime+item.viewtotal;
-    sumorder=sumorder+1;
-    summoney=summoney+item.price
-    sumtimedone=sumtimedone+Math.round(Number(item.viewtotal==null?0:item.viewtotal))
-    if(item.service>600){
-      sumvn=sumvn+1;
-    }else{
-      summoneyUS=summoneyUS+item.price
-      sumus=sumus+1;
-    }
-  })
 
-
-  async function getcounttimeorder() {
-    let  requestUrl = API_URL+'auth/getalluser';
+  async function getOptionService() {
+    let  requestUrl = API_URL+'service/get_Option_Service';
     const response = await fetch(requestUrl, {
       method: 'get',
       headers: new Headers({
-        'Authorization': '1',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    });
+    console.log(response)
+    const responseJson = await response.json();
+    const {list_Platform} = responseJson;
+
+    let platformList =list_Platform.split(',');
+    for(var i=0;i<platformList.length;i++){
+      let platformItem = {
+        platform: platformList[i]
+      }
+      setlistPlatform([...listplatform, platformItem])
+      listplatform.push(platformItem)
+    }
+  }
+  async function getcounttimeorder() {
+    let  requestUrl = API_URL+'user/get_List_User';
+    const response = await fetch(requestUrl, {
+      method: 'get',
+      headers: new Headers({
         'Content-Type': 'application/x-www-form-urlencoded'
       })
     });
@@ -133,63 +126,56 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
         id: randomString(10),
         user: arrlist[i]
       }
-      setList_User([...list_user, orderitem])
-      list_user.push(orderitem)
+      setList_User([...list_User, orderitem])
+      list_User.push(orderitem)
     }
   }
   let videos=''
+  const handleWindowResize = () => {
+    setIsMobile(window.innerWidth <= 800);
+  };
   useEffect(() => {
     setLoading(true)
-    if(orders.length!=0 || list_video.length>0){
+    if(orders.length!=0 || list_OrderId.length>0){
       setLoading(false)
     }
-    setList_Video([])
+    setList_OrderId([])
     useEff=useEff+1
     setuseEff(useEff)
-    totaldordershow=totaldorder
-    setTotalOrderShow(totaldordershow)
-    setTotalOrder(0)
 
-    totaltimeordershow=totaltimeorder
-    setTotalTimeOrderShow(totaltimeordershow)
-    totaltimeorder=0
-    setTotalTimeOrder(0)
+    total_Order_Running_Show=total_Order_Running
+    setTotal_Order_Running_Show(total_Order_Running_Show)
+    setTotal_Order_Running(0)
 
-    totalmoneyshow=totalmoney
-    setTotalMoneyShow(totalmoneyshow)
-    setTotalMoney(0)
+    total_Buff_Show=total_Buff
+    setTotal_Buff_Show(total_Buff_Show)
+    setTotal_Buff(0)
 
-    totalthreadsetshow=totalthreadset
-    setTotalThreadSetShow(totalthreadsetshow)
-    setTotalThreadSet(0)
+    total_Quantity_Show=total_Quantity
+    setTotal_Quantity_Show(total_Quantity_Show)
+    setTotal_Quantity(0)
 
-    totalthreadshow=totalthread
-    setTotalThreadShow(totalthreadshow)
-    setTotalThread(0)
+    total_Charge_Show=total_Charge
+    setTotal_Charge_Show(total_Charge_Show)
+    setTotal_Charge(0)
 
-    totalVnshow=totalvn
-    setTotalVnShow(totalVnshow)
-    setTotalVn(0)
+    total_Thread_Set_Show=total_Thread_Set
+    setTotal_Thread_Set_Show(total_Thread_Set_Show)
+    setTotal_Thread_Set(0)
 
-    totalUsshow=totalUs
-    setTotalUsShow(totalUsshow)
-    setTotalUs(0)
+    total_Thread_Show=total_Thread
+    setTotal_Thread_Show(total_Thread_Show)
+    setTotal_Thread(0)
 
-    totalmoneyUSshow=totalmoneyUS
-    setTotalMoneyUSShow(totalmoneyUSshow)
-    setTotalMoneyUS(0)
 
-    totaltimebuffedordershow=totaltimebuffedorder
-    setTotalTimeBuffedOrderShow(totaltimebuffedordershow)
-    totaltimebuffedorder=0
-    setTotalTimeBuffedOrder(0)
     if(useEff<=1){
       getcounttimeorder();
+      getOptionService();
     }
+    handleWindowResize();
+    window.addEventListener('resize', handleWindowResize);
 
-
-
-  }, [keytrue,keyuser,keyrate,key,orders.length,,])
+  }, [keytrue,keyuser,keyrate,key,keyplatform,orders.length,,])
   const selectGroup = (item: Group) => {
     dispatch(actions.selectGroup(item))
   }
@@ -197,10 +183,10 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   const clickDeleteHandler = () => {
     const arr:string[]=[]
     orders.forEach(item=>{
-      const myElem = list_video.find(value => value.videoid===item.videoid)
+      const myElem = list_OrderId.find(value => value.order_id==item.order_id)
       if(myElem && item.checked){
 
-        arr.push(item.videoid)
+        arr.push(item.order_id.toString())
       }
     })
     const orderarr=arr.join(',')
@@ -214,9 +200,9 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   const clickDeleteOrderDoneHandler = () => {
     const arr:string[]=[]
     orders.forEach(item=>{
-      const myElem = list_video.find(value => value.videoid===item.videoid)
+      const myElem = list_OrderId.find(value => value.order_id===item.order_id)
       if(myElem && item.checked){
-        arr.push(item.videoid)
+        arr.push(item.order_id.toString())
       }
     })
     const orderarr=arr.join(',')
@@ -238,14 +224,31 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
       <div className={`card ${className}`}>
         <div className="page-header" style={{backgroundColor:'#c0e1ce'}}>
           <div className="page-header__content">
-            <div className="align-items-center row" style={{margin:10}}>
-              <div className="col-lg-7 col-sm-12 c-order__header">
-                <span  className='fw-bolder fs-3 mb-1'><span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgb(255,255,255)"}}>Đang chạy {totaldordershow}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)"}}>{format1((useEff<=1?sumvn:totalVnshow))} </span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)"}}>{format1((useEff<=1?sumvn:totalUsshow))}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(9,9,9,0.68)"}}>Luồng cấp {format1((useEff<=1?sumthreadset:totalthreadsetshow))}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(241,133,133,0.97)"}}>Luồng chạy {format1((useEff<=1?sumthread:totalthreadshow))}</span></span>
+            <div className="align-items-center row" style={{marginTop:10,marginBottom:10,marginRight:5,marginLeft:5}}>
+             <div className="col-lg-7 col-sm-12 c-order__header">
                 <p style={{fontSize:11,marginTop:5}} className="fw-bold c-order__list">
-                  <span className='fw-bolder fs-3 mb-1' ><span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(9,9,9,0.68)"}}>Tổng đặt {format1((useEff<=1?sumtime:totaltimeordershow))}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgba(241,133,133,0.97)"}}>Đã chạy {format1(useEff<=1?sumtimedone:totaltimebuffedordershow)}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(141,133,133,0.97)"}}>Còn tồn {format1((useEff<=1?sumtime:totaltimeordershow)-(useEff<=1?sumtimedone:totaltimebuffedordershow))}</span> <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgb(255,255,255)"}}>Tổng tiền {useEff<=1?summoney.toFixed(3):totalmoneyshow.toFixed(3)}$ </span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)"}}>{(useEff<=1?(summoney-summoneyUS).toFixed(3):(totalmoneyshow-totalmoneyUSshow).toFixed(3))}$ </span> <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)"}}>{(useEff<=1?summoneyUS.toFixed(3):totalmoneyUSshow.toFixed(3))}$</span></span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgb(255,255,255)",marginLeft:5}}>{"Order Refill " +total_Order_Running_Show} </span>
+                </span>
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:5,marginTop:3}}>${total_Charge_Show.toFixed(Number.isInteger(total_Charge_Show)==true?0:2)}
+                  </span>
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"#ffffff",marginLeft:5,marginTop:3}}>{"Set " + ((total_Thread_Set_Show>=1000?(format1((total_Thread_Set_Show/1000))+"K "):(format1((total_Thread_Set_Show)))))}
+                  </span>
+
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:5,marginTop:3}}>{"Run " +((total_Thread_Show)>=1000?(format1((total_Thread_Show/1000))+"K "):(format1((total_Thread_Show))))}
+                  </span>
+                </p>
+                <p style={{fontSize:11}} className="fw-bold c-order__list">
+                <span className='fw-bolder fs-3 mb-1' >
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#090909",backgroundColor:"rgb(255,255,255)",marginLeft:5,marginTop:3}}>{"Quantity "+ ((total_Quantity_Show)>=1000?(format1((total_Quantity_Show/1000))+"K "):(format1((total_Quantity_Show))))}
+                  </span>
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:5,marginTop:3}}>{"Total "+ (((total_Buff_Show))>=1000?(format1(((total_Buff_Show))/1000)+"K "):(format1(((total_Buff_Show)))))}
+                  </span>
+                  <span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"#26695c",marginLeft:5,marginTop:3}}>{"Remains "+ (((total_Quantity_Show)-(total_Buff_Show))>=1000?(format1(((total_Quantity_Show)-(total_Buff_Show))/1000)+"K "):(format1(((total_Quantity_Show)-(total_Buff_Show)))))}
+                  </span>
+                  </span>
                 </p>
               </div>
-
               <div className="col-lg-5 col-sm-12 text-right">
                 {isShowFixMulti && role === "ROLE_ADMIN"&&(
                     <button style={{marginRight:5}}
@@ -254,7 +257,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                             }}
                             className='btn btn-google'
                     >
-                      Hủy
+                      Cancel
                     </button>
                 )}
                 {isShowFixMulti&& role === "ROLE_ADMIN"&& (
@@ -264,7 +267,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                         }}
                         className='btn btn-light'
                     >
-                      Sửa luồng
+                      Update Thread
                     </button>
                 )}
 
@@ -275,31 +278,9 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                             }}
                             className='btn btn-light'
                     >
-                      Hoàn thành
+                      Completed
                     </button>
                 )}
-
-                {role === "ROLE_ADMIN"&&<button style={{marginRight:5,color:"white"}}
-                                                onClick={() => {
-                                                  setShowCheckBhVideoIdManual(true)
-                                                }}
-                                                className='btn btn-success'
-                >Check BH
-                </button>}
-                {role === "ROLE_ADMIN"&&<button style={{marginRight:5,color:"white"}}
-                                                onClick={() => {
-                                                  setShowCheckBhManual(true)
-                                                }}
-                                                className='btn btn-google'
-                >Check Hoàn Tiền
-                </button>}
-                {role === "ROLE_ADMIN_Pending"&&<button style={{marginRight:5,color:"white"}}
-                                                        onClick={() => {
-                                                          setShowBhManual(true)
-                                                        }}
-                                                        className='btn btn-google'
-                >Bảo hành
-                </button>}
               </div>
 
             </div>
@@ -308,7 +289,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
             <div className="align-items-center row" style={{backgroundColor:"white",margin:10}}>
               <div style={{width:"60%"}}>
                 <div>
-                  <Input style={{margin:10,width:"48%",maxWidth:130,minWidth:60,height:40,float:"left"}}
+                  <Input style={{marginLeft:10,maxWidth:230,width:isMobile==true?100:200,height:40,marginTop:10,float:"left"}}
                          id="note"
                          name="note"
                          value={key}
@@ -317,7 +298,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                          }
                          type="text"
                   />
-                  <button style={{ fontWeight:'bold',maxWidth:80,color:"black",backgroundColor:"#c0e1ce",height:40,marginTop:10,float:"left"}}
+                  <button style={{ marginLeft:3,fontWeight:'bold',maxWidth:80,color:"black",backgroundColor:"#c0e1ce",height:40,marginTop:10,marginRight:10,float:"left"}}
                           onClick={() => {
                             setKeyTrue(1)
                           }}
@@ -343,6 +324,25 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                   >
                     Search
                   </button>
+                  <Input style={{margin:10,width:"auto",height:40,fontSize:12,backgroundColor:'#c0e1ce',color:"black",textAlign:"center",float:"left"}}
+                      //onChange={(e) => setKeyRate(parseInt(e.target.value))}
+                         onChange={(e) => {
+                           setKeyPlatform(e.target.value)
+                           setKeyPlatformTrue(1)
+                         }}
+                         className="form-control form-control-solid"
+                         type="select"
+                         value={keyplatform}
+                  >
+                    {
+                      listplatform.map((item, index) => {
+                          return(
+                              <option key={item.platform.indexOf("Platform")>=0?"":item.platform} value={item.platform.indexOf("Platform")>=0?"":item.platform}>
+                                {item.platform.charAt(0).toUpperCase()+item.platform.slice(1)}</option>)
+                      })
+                    }
+
+                  </Input>
                 </div>
               </div>
 
@@ -376,7 +376,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                        value={keyrate}
                 >
                   <option key={0} value={0}>
-                    {"All %"}
+                    {"%"}
                   </option>
                   <option key={10} value={10}>
                     {"10"}
@@ -405,7 +405,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                   <option key={90} value={90}>
                     {"90"}
                   </option>
-                  <option key={100} value={100}>
+                  <option key={101} value={101}>
                     {"101"}
                   </option>
                   <option key={104} value={104}>
@@ -414,22 +414,31 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                   <option key={106} value={106}>
                     {"106"}
                   </option>
+                  <option key={110} value={110}>
+                    {"110"}
+                  </option>
+                  <option key={115} value={115}>
+                    {"115"}
+                  </option>
+                  <option key={120} value={120}>
+                    {"120"}
+                  </option>
                 </Input>
-                {role==='ROLE_ADMIN111'&&<Input style={{margin:10,width:"auto",maxWidth:100,height:40,fontSize:12,backgroundColor:'#c0e1ce',color:"black",textAlign:"center",float:"right"}}
+                {role==='ROLE_ADMIN'&&<Input style={{margin:10,width:isMobile==true?100:200,maxWidth:230,height:40,fontSize:12,backgroundColor:'#c0e1ce',color:"black",textAlign:"center",float:"right"}}
                     //onChange={(e) => setKeyRate(parseInt(e.target.value))}
-                                                onChange={(e) => {
-                                                  setKeyUser(e.target.value)
-                                                  setKeyUserTrue(1)
-                                                  //setKeyRate(keyrate)
-                                                }}
-                                                className="form-control form-control-solid"
-                                                type="select"
-                                                value={keyuser}
+                                             onChange={(e) => {
+                                               setKeyUser(e.target.value)
+                                               setKeyUserTrue(1)
+                                               //setKeyRate(keyrate)
+                                             }}
+                                             className="form-control form-control-solid"
+                                             type="select"
+                                             value={keyuser}
                 >
                   {
-                    list_user.map((item, index) => {
+                    list_User.map((item, index) => {
                       return(
-                          <option key={item.user.indexOf("All User")>=0?"":item.user} value={item.user.indexOf("All User")>=0?"":item.user}>
+                          <option key={item.user.indexOf("User")>=0?"":item.user} value={item.user.indexOf("User")>=0?"":item.user}>
                             {item.user}</option>)
                     })
                   }
@@ -437,10 +446,6 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
               </div>
 
 
-            </div>
-          </div>
-          <div className="page-header__content">
-            <div className="align-items-center row" style={{marginLeft:10,marginRight:10}}>
             </div>
           </div>
         </div>
@@ -452,7 +457,7 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
               <thead>
               <tr className='fw-bolder text-muted'>
                 <th className='w-25px'>
-                  <div style={{marginLeft:5}}  className='form-check form-check-sm form-check-custom form-check-solid'>
+                  <div style={{marginLeft:5}} className='form-check form-check-sm form-check-custom form-check-solid'>
                     <input
                         onChange={(evt) => {
                           dispatch(actions.checkedAllChange(evt.target.checked))
@@ -467,29 +472,35 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
                     />
                   </div>
                 </th>
-                <th className='min-w-10px text-sm'>
+                <th className='min-w-25px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>STT</span>
                 </th>
-                <th className='min-w-10px text-sm'>
-                  <span style={{fontSize:12,color:"black"}} className='text-sm'>OrderId</span>
+                <th className='min-w-50px text-sm'>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Id</span>
                 </th>
-                <th className='min-w-10px text-sm'>
+                <th className='min-w-50px text-sm'>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Platform</span>
+                </th>
+                <th className='min-w-250px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>Info</span>
                 </th>
-                {role!="ROLE_USER"&&<th className='min-w-10px text-sm'>
+                {role!="ROLE_USER"&&<th className='min-w-100px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>Threads</span>
                 </th>}
-                <th className='min-w-10px text-sm'>
-                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Status</span>
+                <th className='min-w-150px text-sm'>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Service</span>
                 </th>
-                <th className='min-w-10px text-sm'>
-                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Start</span>
+                <th className='min-w-200px text-sm'>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Time</span>
                 </th>
-                {role=="ROLE_USER111"&&<th className='min-w-10px text-sm'>
+                {role!="ROLE_USER"&&<th className='min-w-100px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>User</span>
                 </th>}
-                <th   className='min-w-10px text-sm'>
+                <th   className='min-w-150px min-w-10px text-sm'>
                   <span style={{fontSize:12,color:"black"}} className='text-sm'>Note</span>
+                </th>
+                <th className='min-w-150px text-sm'>
+                  <span style={{fontSize:12,color:"black"}} className='text-sm'>Status</span>
                 </th>
                 <th   className='min-w-150px text-sm'>
                 </th>
@@ -500,340 +511,506 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
               <tbody>
               {orders &&
                   orders.map((order: OrderModel, index: number) => {
-                    if (keyusertrue==0&&keyratetrue===0&&keytrue==0) {
+                    if (keyusertrue==0&&keyratetrue===0&&keytrue==0&&keyplatformtrue==0) {
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if(order.user.indexOf(keyuser)>=0 &&keyusertrue==1&&keyratetrue==0&&keytrue==0){
+                    }else if(order.username.indexOf(keyuser)>=0 &&keyusertrue==1&&keyratetrue==0&&keytrue==0&&keyplatformtrue==0){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if(Math.round((Math.round(Number(order.viewtotal==null?0:order.viewtotal))/order.vieworder*100))>=keyrate&&keyratetrue==1&&keyusertrue==0&&keytrue==0){
+                    }else if(order.platform.indexOf(keyplatform)>=0 &&keyusertrue==0&&keyratetrue==0&&keytrue==0&&keyplatformtrue==1){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if((key.indexOf(order.videoid)>=0 || order.note.indexOf(key)>=0  || key.indexOf("vn")>=0&&order.service>=600 || key.indexOf("us")>=0&&order.service<600 || key.indexOf(order.orderid.toString()) >=0 || order.service.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0)&&keytrue==1&&keyusertrue==0&&keyratetrue==0){
+                    }else if(Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate&&keyratetrue==1&&keyusertrue==0&&keytrue==0&&keyplatformtrue==0){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if(((key.indexOf(order.videoid)>=0 || order.note.indexOf(key)>=0  || key.indexOf("vn")>=0&&order.service>=600 || key.indexOf("us")>=0&&order.service<600 || key.indexOf(order.orderid.toString()) >=0 || order.service.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0) && Math.round((Math.round(Number(order.viewtotal==null?0:order.viewtotal))/order.vieworder*100))>=keyrate) &&keytrue==1&&keyusertrue==0&&keyratetrue==1){
+                    }else if((key.indexOf(order.order_key)>=0  ||  order.note.indexOf(key)>=0 || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)&&keytrue==1&&keyusertrue==0&&keyratetrue==0&&keyplatformtrue==0){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if((order.user.indexOf(keyuser)>=0 && Math.round((Math.round(Number(order.viewtotal==null?0:order.viewtotal))/order.vieworder*100))>=keyrate) &&keytrue==0&&keyusertrue==1&&keyratetrue==1){
+                    }else if(((key.indexOf(order.order_key)>=0 ||  order.note.indexOf(key)>=0  || key.indexOf(order.order_id.toString()) >=0|| order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                        && Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate) &&keytrue==1
+                        &&keyusertrue==0&&keyratetrue==1&&keyplatformtrue==0){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }
-                    else if(((key.indexOf(order.videoid)>=0 || order.note.indexOf(key)>=0  || key.indexOf("vn")>=0&&order.service>=600 || key.indexOf("us")>=0&&order.service<600 || key.indexOf(order.orderid.toString()) >=0 || order.service.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0) && order.user.indexOf(keyuser)>=0 )&&keytrue==1&&keyusertrue==1&&keyratetrue==0){
+                    }else if((order.username.indexOf(keyuser)>=0 &&
+                        Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate)
+                        &&keytrue==0&&keyusertrue==1&&keyratetrue==1&&keyplatformtrue==0){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
                               item={order}
                           />
                       )
-                    }else if(((key.indexOf(order.videoid)>=0 || order.note.indexOf(key)>=0  || key.indexOf("vn")>=0&&order.service>=600 || key.indexOf("us")>=0&&order.service<600 || key.indexOf(order.orderid.toString()) >=0 || order.service.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0) && order.user.indexOf(keyuser)>=0 && Math.round((Math.round(Number(order.viewtotal==null?0:order.viewtotal))/order.vieworder*100))>=keyrate)&&keytrue==1&&keyusertrue==1&&keyratetrue==1){
+                    }else if((order.username.indexOf(keyuser)>=0 &&
+                        order.platform.indexOf(keyplatform)>=0)
+                        &&keytrue==0&&keyusertrue==1&&keyratetrue==0&&keyplatformtrue==1){
                       if(index===0){
-                        totaldorder=1
-                        totaltimeorder=order.vieworder
-                        totalthreadset=order.maxthreads
-                        totalthread=order.total
-                        totalmoney=order.price
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))
-                        if(order.service>600){
-                          totalvn=1
-                        }else{
-                          totalmoneyUS=order.price
-                          totalUs=1
-                        }
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
                       }else{
-                        totaldorder=totaldorder+1
-                        totalmoney=totalmoney+order.price
-                        totalthreadset=totalthreadset+order.maxthreads
-                        totalthread=totalthread+order.total
-                        totaltimeorder=order.vieworder+totaltimeorder
-                        totaltimebuffedorder=Math.round(Number(order.viewtotal==null?0:order.viewtotal))+totaltimebuffedorder
-                        if(order.service>600){
-                          totalvn=1+totalvn
-                        }else{
-                          totalmoneyUS=totalmoneyUS+order.price
-                          totalUs=1+totalUs
-                        }
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
                       }
-                      let orderitem = {
-                        id: totaldorder,
-                        videoid: order.videoid
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
                       }
                       //setList_User([...list_user, orderitem])
-                      list_video.push(orderitem)
+                      list_OrderId.push(order_Item)
                       return (
                           <OrderItem
-                              index={totaldorder}
+                              index={total_Order_Running}
                               showEdit={role === 'ROLE_ADMIN'}
-                              key={order.videoid}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if((Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate &&
+                            order.platform.indexOf(keyplatform)>=0)
+                        &&keytrue==0&&keyusertrue==0&&keyratetrue==1&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    } else if((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0 || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                        &&order.platform.indexOf(keyplatform)>=0&&keytrue==1&&keyusertrue==0&&keyratetrue==0&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if(((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0 || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                        && order.username.indexOf(keyuser)>=0 )
+                        &&keytrue==1&&keyusertrue==1&&keyplatformtrue==0&&keyratetrue==0){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if(((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0   || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                        && order.username.indexOf(keyuser)>=0 && Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate)
+                        &&keytrue==1&&keyusertrue==1&&keyratetrue==1&&keyplatformtrue==0){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if((order.platform.indexOf(keyplatform)>=0&&
+                            order.username.indexOf(keyuser)>=0 && Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate)
+                        &&keytrue==0&&keyusertrue==1&&keyratetrue==1&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if(((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0   || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                            && order.platform.indexOf(keyplatform)>=0 && Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate)
+                        &&keytrue==1&&keyusertrue==0&&keyratetrue==1&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if(((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0   || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                            && order.username.indexOf(keyuser)>=0 && order.platform.indexOf(keyplatform)>=0)
+                        &&keytrue==1&&keyusertrue==1&&keyratetrue==0&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
+                              item={order}
+                          />
+                      )
+                    }else if(((key.indexOf(order.order_key)>=0 || order.note.indexOf(key)>=0   || key.indexOf(order.order_id.toString()) >=0 || order.service_id.toString().indexOf(key.indexOf('?')>=0?key.replace('?',''):'done')>=0 || order.task.toString().indexOf(key.indexOf('#')>=0?key.replace('#',''):'done')>=0)
+                            && order.username.indexOf(keyuser)>=0
+                            && order.platform.indexOf(keyplatform)>=0
+                            && Math.round((Math.round(Number(order.total==null?0:order.total))/order.quantity*100))>=keyrate)
+                        &&keytrue==1&&keyusertrue==1&&keyratetrue==1&&keyplatformtrue==1){
+                      if(index===0){
+                        total_Order_Running=1
+                        total_Quantity=order.quantity
+                        total_Thread_Set=order.thread
+                        total_Thread=order.total_thread
+                        total_Buff=order.total
+                        total_Charge=order.charge
+                      }else{
+                        total_Order_Running=1+total_Order_Running;
+                        total_Quantity=order.quantity+total_Quantity;
+                        total_Thread_Set=order.thread+total_Thread_Set;
+                        total_Thread=order.total_thread+total_Thread;
+                        total_Buff=order.total+total_Buff;
+                        total_Charge=order.charge+total_Charge;
+                      }
+                      let order_Item = {
+                        id: total_Order_Running,
+                        order_id: order.order_id
+                      }
+                      //setList_User([...list_user, orderitem])
+                      list_OrderId.push(order_Item)
+                      return (
+                          <OrderItem
+                              index={total_Order_Running}
+                              showEdit={role === 'ROLE_ADMIN'}
+                              key={order.order_id}
                               item={order}
                           />
                       )
@@ -852,18 +1029,10 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
           {/* end::Table container */}
         </div>
         {/* begin::Body */}
-        {showAdd && (
-            <AddModal
-                show={true}
-                close={() => {
-                  setShowAdd(false)
-                }}
-            />
-        )}
 
         <EditMulti
             show={showEditMulti}
-            listvieoid={list_video}
+            listvieoid={list_OrderId}
             close={() => {
               setShowEditMulti(false)
             }}
@@ -875,22 +1044,12 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
             }}
         />
 
+
+
         <BhManualModal
             show={showBhManual}
             close={() => {
               setShowBhManual(false)
-            }}
-        />
-        <CheckBhManualModal
-            show={showCheckBhManual}
-            close={() => {
-              setShowCheckBhManual(false)
-            }}
-        />
-        <CheckBhVideoIdManualModal
-            show={showCheckBhVideoIdManual}
-            close={() => {
-              setShowCheckBhVideoIdManual(false)
             }}
         />
       </div>

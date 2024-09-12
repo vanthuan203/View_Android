@@ -23,8 +23,8 @@ const BhManualModal: React.FC<Props> = ({ show, close }) => {
     const username: string = useSelector<RootState>(({ auth }) => auth.user?.username, shallowEqual) as string || ""
     const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
     const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
-    const adding: boolean = useSelector<RootState>(({ orderbaohanh }) => orderbaohanh.adding, shallowEqual) as boolean || false
-    const groups: Group[] = useSelector<RootState>(({ orderbaohanh }) => orderbaohanh.groups, shallowEqual) as Group[] || []
+    const adding: boolean = useSelector<RootState>(({ orderdone }) => orderdone.adding, shallowEqual) as boolean || false
+    const groups: Group[] = useSelector<RootState>(({ orderdone }) => orderdone.groups, shallowEqual) as Group[] || []
 
     function format1(n:number) {
         return n.toFixed(0).replace(/./g, function(c, i, a) {
@@ -131,9 +131,6 @@ const BhManualModal: React.FC<Props> = ({ show, close }) => {
                     list_order.push(orderitem)
                 })
     }
-    async function sleep(ms:number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     const  submit = async () => {
         setSumOrder(0)
         setSumTime(0)
@@ -156,14 +153,8 @@ const BhManualModal: React.FC<Props> = ({ show, close }) => {
         const videoidlist = videoid.split('\n')
         for (var i = 0; i < videoidlist.length; i++) {
             let video = videoidlist[i]
-            const videoidOnColum = videoidlist[i].split(',')
-            for(var j=0;j<videoidOnColum.length;j++)
-            {
-                let videos = videoidOnColum[j]
-                await order_video_ver2(videos)
-                await sleep(200);
-                await getUserByToken()
-            }
+            await order_video_ver2(video)
+            await getUserByToken()
         }
     }
 
@@ -193,7 +184,7 @@ const BhManualModal: React.FC<Props> = ({ show, close }) => {
                                 id="list_id"
                                 name="list_id"
                                 className="form-control form-control-solid"
-                                placeholder={"1 VideoId hoặc Orderid một dòng( Hoặc phân cách bằng dấu phẩy)"}
+                                placeholder={"1 VideoId hoặc Orderid một dòng..."}
                                 value={videoid}
                                 type={"textarea"}
                                 onChange={(e) => setVideoid(e.target.value)}
@@ -239,7 +230,7 @@ const BhManualModal: React.FC<Props> = ({ show, close }) => {
                 </div>
                 <div className="modal-footer">
                     <button type="button" onClick={dismissModal} className="btn btn-light" >Thoát</button>
-                    <button disabled={adding} type="button" onClick={submit} style={{backgroundColor:"#26695c",color:"white",display: showorder == true ? "true" : "none"}}  className="btn">{adding ? "Chờ" : "Bảo hành"}</button>
+                    <button disabled={adding} type="button" onClick={submit} style={{backgroundColor:"#26695c",color:"white",display: showorder == true ? "true" : "none"}}  className="btn">{adding ? "Chờ" : "Thêm đơn"}</button>
                 </div>
             </div>
         </Modal>

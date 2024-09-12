@@ -9,7 +9,6 @@ import {
 } from "reactstrap"
 import { useSelector, shallowEqual } from 'react-redux'
 import { RootState } from 'setup'
-import { Group } from '../../models/Order'
 import {findorder} from "../../../orderhistory/redux/OrdersCRUD";
 import {randomString} from "react-inlinesvg/lib/helpers";
 import {getUserByToken} from "../../../auth/redux/AuthCRUD";
@@ -24,7 +23,6 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
     const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
     const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
     const adding: boolean = useSelector<RootState>(({ orderdone }) => orderdone.adding, shallowEqual) as boolean || false
-    const groups: Group[] = useSelector<RootState>(({ orderdone }) => orderdone.groups, shallowEqual) as Group[] || []
     const API_URL = process.env.REACT_APP_API_URL
     function format1(n:number) {
         return n.toFixed(0).replace(/./g, function(c, i, a) {
@@ -56,17 +54,16 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
 
 
     async function getcounttimeorder() {
-        let  requestUrl = API_URL+'servive/getallservice';
+        let  requestUrl = API_URL+'service/get_List_Service?role='+role;
         const response = await fetch(requestUrl, {
             method: 'get',
             headers: new Headers({
-                'Authorization': '1',
                 'Content-Type': 'application/x-www-form-urlencoded'
             })
         });
         const responseJson = await response.json();
-        const {user} = responseJson;
-        let arrlist =user.split(',');
+        const {service} = responseJson;
+        let arrlist =service.split(',');
         for(var i=0;i<arrlist.length;i++){
             let orderitem = {
                 id: arrlist[i].split('|')[0].trim(),

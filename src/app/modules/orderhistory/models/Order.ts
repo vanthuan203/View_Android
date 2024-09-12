@@ -1,145 +1,38 @@
 export interface OrderModel {
-  vieworder:number,
-  service:number,
-  orderid:number,
-  videoid: string,
-  videotitle: string,
+  order_id:number,
+  order_key: string,
+  order_link: string,
+  total_thread: number,
+  thread: number,
+  insert_time: number,
+  start_time: number,
+  end_time: number,
+  cancel: number,
+  update_time: number,
+  update_current_time:number,
+  start_count: number,
   total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  enabled: number,
-  insertdate: number,
-  timestart:number,
-  timecheckbh:number,
-  enddate: number,
-  cancel:number,
-  homerate: number ,
+  quantity: number,
+  check_count: number,
+  current_count: number,
+  service_id: number,
+  charge: number,
   note: string,
-  directrate:number,
-  timebuff:number,
-  timebuffh24h:number,
-  view24h:number,
-  viewtotal:number,
-  timebuffhtotal: number,
-  commentrate:number,
-  mobilerate:number,
-  searchrate:number,
-  likerate:number,
-  suggestrate:number,
-  duration:number,
-  optionbuff:number,
-  user:string,
-  price:number,
-  geo:string,
+  username: string,
+  task: string,
+  platform: string,
+  bonus:number,
+  refund:number,
+  refund_time:number,
+  refill:number,
+  refill_time:number,
   checked?:boolean
 }
 export interface OrderModelChecked {
-  videoid: string,
-  id:number,
-  timebuff:number,
-  viewstart:number,
-  viewend:number,
-  insertdate: string,
-  enddate: string,
-  cancel:number,
-  viewtotal:number,
-  timebuffhtotal: number,
-  user:string,
-  note:string,
-}
-
-export interface OrderUpdateForm {
-  videoid: string,
-  videotitle: string,
-  total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  enabled: number,
-  insertdate: number,
-  timestart:number,
-  enddate: number,
-  homerate: number ,
-  note: string,
-  directrate:number,
-  timebuff:number,
-  timebuffh24h:number,
-  view24h:number,
-  viewtotal:number,
-  timebuffhtotal: number,
-  commentrate:number,
-  mobilerate:number,
-  searchrate:number,
-  likerate:number,
-  suggestrate:number,
-  optionbuff:number,
-  user:string
-}
-
-export interface OrderForm {
-  videoid:string,
-  homerate: number,
-  note: string,
-  directrate: number,
-  //view_need: number,
-  //list_video:string,
-  commentrate: number,
-  mobilerate: number,
-  searchrate: number,
-  enabled: number,
-  maxthreads: number,
-  viewstart:number,
-  //group_id: number,
-  likerate: number,
-  //comment_list: string,
-  suggestrate: number,
-  //premium_rate: number,
-  //keyword: string
-  timebuff:number,
-  optionbuff:number,
-  user:string
-}
-export interface OrderFormManual {
-  videoid:string,
-  homerate: number,
-  note: string,
-  directrate: number,
-  //view_need: number,
-  //list_video:string,
-  commentrate: number,
-  timestart:number,
-  mobilerate: number,
-  searchrate: number,
-  enabled: number,
-  maxthreads: number,
-  viewstart:number,
-  //group_id: number,
-  likerate: number,
-  //comment_list: string,
-  suggestrate: number,
-  //premium_rate: number,
-  //keyword: string
-  timebuff:number,
-  optionbuff:number,
-  user:string
-}
-
-export interface OrderPost {
-  channel_id: string
-  subscribe_need: number
-  tab_run: number
-  note: string
-  group_id: number
+  order_id: number,
+  id:number
 }
 
 
-export interface Group {
-  id: number
-  insert_date: number
-  insert_dateString: string
-  name: number
-  number_channel: number
-}
+
+

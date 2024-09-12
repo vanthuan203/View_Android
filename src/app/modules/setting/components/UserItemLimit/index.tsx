@@ -23,37 +23,35 @@ const UserItemLimit : React.FC<Props> = ({ item ,index}) => {
     }
     return (
 
-        <tr>
+        <tr style={{margin:100,backgroundColor:item.state==0?"rgba(252,226,207,0.62)":"#ffffff"}}>
             <td>
-                <span>
-                    <text style={{fontSize:12,fontWeight:"bold"}} >
-                    {item.user}
-                    </text>
-                </span>
-
+               <img style={{float:"left",marginRight:5,width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/svg/social-logos/'+item.platform+'.svg')} alt='metronic' />
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.service}
+                                        {item.task.replace(item.platform+"_","").toUpperCase()}
                                 </text>
                     </span>
             </td>
             <td >
-                    <span style={{fontSize:12}} >
+                    <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.maxorder}
+                                        {item.priority}
                                 </text>
                     </span>
-                <span style={{ color:'white',fontSize:10,backgroundColor:"rgba(20,122,178,0.66)",marginLeft:5,padding:2}} className='badge badge-success 1'>{item.countorder}</span>
             </td>
             <td >
-                    <span style={{fontSize:12}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.maxrunning}
+                    <span style={{fontSize:11}} >
+                                <text style={{fontWeight:"bold",color:item.state==1?"#088114":"#a22727"}} >
+                                        {item.state==1?"ON":"OFF"}
                                 </text>
                     </span>
-                <span style={{ color:'white',fontSize:10,backgroundColor:"#03d96e",marginLeft:5,padding:2}} className='badge badge-success 1'>{item.countdone}</span>
+            </td>
+            <td >
+                {item.update_time!=null&&item.update_time>0&&<span style={{color:'black',fontWeight:"bold",fontSize:11}}>
+                        {new Date(item.update_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.update_time).toLocaleTimeString('vn-VN')}
+                    </span>}
             </td>
             <td>
                 <div className='d-flex justify-content-end flex-shrink-0'>

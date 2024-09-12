@@ -9,7 +9,7 @@ import {
   getListOrder,
   getOrderFilter,
   updateOrder,
-  updateOrderCmt,
+  updateOrderRefill,
   updateOrderFollwer,
   addOrder,
   addGroup,
@@ -42,12 +42,12 @@ export const actionTypes = {
   ShowcurrentOrder: '[OrderhistoryFind] Show Order',
   ShowcurrentOrderCmt: '[OrderhistoryFind] Show Order Cmt',
   RequestUpdate: '[OrderhistoryFind] Requested Update',
-  RequestUpdateCmt: '[OrderhistoryFind] Requested Cmt Update',
+  RequestUpdateRefill: '[OrderhistoryFind] Requested Refill Update',
   RequestUpdateFollower: '[OrderhistoryFind] Requested Follower Update',
   UpdateMultiOrderRequest: '[OrderhistoryFind] Update Multi Order Request',
   UpdateSuccess: '[OrderhistoryFind] Update Success',
   UpdateMultiSuccess: '[OrderhistoryFind] Update Multi Success',
-  UpdateMultiCmtSuccess: '[OrderhistoryFind] Update  Multi Cmt Success',
+  UpdateMultiefRefillSuccess: '[OrderhistoryFind] Update  Multi Refill Success',
   UpdateMultiFollowerSuccess: '[OrderhistoryFind] Update  Multi Follower Success',
   UpdateFail: '[OrderhistoryFind] Update Fail',
   ClearSelected: '[OrderhistoryFind] Clear selected account',
@@ -180,7 +180,7 @@ export const reducer = persistReducer(
         return {
           ...state,
           orders: state.orders.filter((item: OrderModel) => {
-            if (item.videoid === action.payload?.videoid) {
+            if (item.order_key == action.payload?.order_key) {
               return false
             }
             return true
@@ -200,7 +200,7 @@ export const reducer = persistReducer(
           loading: true
         }
       }
-      case actionTypes.RequestUpdateCmt: {
+      case actionTypes.RequestUpdateRefill: {
         return {
           ...state,
           loading: true
@@ -220,8 +220,8 @@ export const reducer = persistReducer(
       }
       case actionTypes.UpdateSuccess: {
         const remaporders = state.orders.map((item: OrderModel) => {
-          if (item.videoid === action.payload?.videoview?.videoid) {
-            return action.payload?.videoview
+          if (item.order_key === action.payload?.order_history?.order_key) {
+            return action.payload?.order_history
           } else {
             return item
           }
@@ -236,8 +236,8 @@ export const reducer = persistReducer(
       }
       case actionTypes.UpdateMultiSuccess: {
         const remaporders = state.orders.map((item: OrderModel) => {
-          const findItem = action.payload?.videoview.find((_item:OrderModel)=>{
-            if(_item.orderid==item.orderid){
+          const findItem = action.payload?.order_history.find((_item:OrderModel)=>{
+            if(_item.order_id==item.order_id){
               return true
             }
             return false
@@ -255,10 +255,10 @@ export const reducer = persistReducer(
           currentOrder: undefined
         }
       }
-      case actionTypes.UpdateMultiCmtSuccess: {
-        const remaporders = state.ordersCmt.map((item: OrderModelCmt) => {
-          const findItem = action.payload?.videocomment.find((_item:OrderModelCmt)=>{
-            if(_item.orderid==item.orderid){
+      case actionTypes.UpdateMultiefRefillSuccess: {
+        const remaporders = state.orders.map((item: OrderModel) => {
+          const findItem = action.payload?.order_history.find((_item:OrderModel)=>{
+            if(_item.order_id==item.order_id){
               return true
             }
             return false
@@ -270,10 +270,10 @@ export const reducer = persistReducer(
         })
         return {
           ...state,
-          ordersCmt: remaporders,
+          orders: remaporders,
           loading: false,
           adding: false,
-          currentOrderCmt: undefined
+          currentOrder: undefined
         }
       }
       case actionTypes.UpdateMultiFollowerSuccess: {
@@ -365,7 +365,7 @@ export const reducer = persistReducer(
         return {
           ...state,
           orders:  state.orders.map(item=>{
-            if(item.orderid===action.payload?.data?.orderid){
+            if(item.order_id==action.payload?.data?.order_id){
               return {
                 ...item,
                 checked:action?.payload?.data?.checked
@@ -446,7 +446,7 @@ export const reducer = persistReducer(
 )
 
 export const actions = {
-  requestOrders: (user:string) => ({ type: actionTypes.RequestOrders ,payload:{user}}),
+  requestOrders: (order_key:string) => ({ type: actionTypes.RequestOrders ,payload:{order_key}}),
   requestOrderCmt: (user:string) => ({ type: actionTypes.RequestOrderCmt ,payload:{user}}),
   requestOrderFollowerTiktok: (user:string) => ({ type: actionTypes.RequestOrderFollowerTiktok ,payload:{user}}),
   showordersfilter: (key: string,user:string) => ({ type: actionTypes.ShowOrdersFilter ,payload: { key,user }} ),
@@ -460,12 +460,12 @@ export const actions = {
   addOrderSuccess: (order: OrderModel) => ({ type: actionTypes.AddOrderSuccess, payload: { order } }),
   addOrdersSuccess: (orders: OrderModel[]) => ({ type: actionTypes.AddOrdersSuccess, payload: { orders } }),
   addOrderFail: (message: string) => ({ type: actionTypes.AddOrderFail, payload: { message } }),
-  requestUpdate: (orderid: string,mode:number,check:number) => ({ type: actionTypes.RequestUpdate, payload: { orderid,mode,check } }),
-  requestUpdateCmt: (orderid: string) => ({ type: actionTypes.RequestUpdateCmt, payload: { orderid } }),
+  requestUpdate: (orderid: string,check_current:boolean,check_end_time:boolean) => ({ type: actionTypes.RequestUpdate, payload: { orderid,check_current,check_end_time } }),
+  requestUpdateRefill: (orderid: string) => ({ type: actionTypes.RequestUpdateRefill, payload: { orderid } }),
   requestUpdateFollower: (orderid: string) => ({ type: actionTypes.RequestUpdateFollower, payload: { orderid } }),
   updateSuccess: (videoview: OrderModel[]) => ({ type: actionTypes.UpdateSuccess, payload: { videoview } }),
-  updateMultiSuccess: (videoview: OrderModel[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { videoview } }),
-  updateMultiCmtSuccess: (videocomment: OrderModelCmt[]) => ({ type: actionTypes.UpdateMultiCmtSuccess, payload: { videocomment } }),
+  updateMultiSuccess: (order_history: OrderModel[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { order_history } }),
+  updateMultiRefillSuccess: (order_history: OrderModel[]) => ({ type: actionTypes.UpdateMultiefRefillSuccess, payload: { order_history } }),
   updateMultiFollowerSuccess: (channel_tiktok: OrderModelFollower[]) => ({ type: actionTypes.UpdateMultiFollowerSuccess, payload: { channel_tiktok } }),
   updateFail: (message: string) => ({ type: actionTypes.UpdateFail, payload: { message } }),
   showcurrentOrder: (currentOrder: OrderModel) => ({ type: actionTypes.ShowcurrentOrder, payload: { currentOrder } }),
@@ -480,9 +480,9 @@ export const actions = {
   selectGroup: (group: Group) => ({ type: actionTypes.SelectGroup, payload: { group } }),
   deleteOrderRequest: (videoid: string) => ({ type: actionTypes.DeleteOrderRequest, payload: { videoid } }),
   deleteOrderSuccess: (videoid: string) => ({ type: actionTypes.DeleteOrderSuccess, payload: { videoid } }),
-  checkedChange: (data:{orderid:number,checked:boolean}) => ({ type: actionTypes.CheckedChange, payload: { data } }),
+  checkedChange: (data:{order_id:number,checked:boolean}) => ({ type: actionTypes.CheckedChange, payload: { data } }),
   checkedChangeCmt: (data:{orderid:number,checked:boolean}) => ({ type: actionTypes.CheckedChangeCmt, payload: { data } }),
-  checkedChangeFollower: (data:{orderid:number,checked:boolean}) => ({ type: actionTypes.CheckedChangeFollower, payload: { data } }),
+  checkedChangeFollower: (data:{order_id:number,checked:boolean}) => ({ type: actionTypes.CheckedChangeFollower, payload: { data } }),
   checkedAllChange: (checked:boolean) => ({ type: actionTypes.CheckedAllChange, payload: { checked } }),
   checkedAllChangeCmt: (checked:boolean) => ({ type: actionTypes.CheckedAllChangeCmt, payload: { checked } }),
   checkedAllChangeFollower: (checked:boolean) => ({ type: actionTypes.CheckedAllChangeFollower, payload: { checked } }),
@@ -491,10 +491,10 @@ export const actions = {
 
 export function* saga() {
   yield takeLatest(actionTypes.RequestOrders, function* userRequested(param: any) {
-    const payload = param.payload.user
+    const payload = param.payload.order_key
     const { data: orders } = yield getListOrder(payload)
-    yield put(actions.fulfillorders(orders.videoview))
-    if(orders.videoview==null){
+    yield put(actions.fulfillorders(orders.order_history))
+    if(orders.order_history.length==0){
       alert("Không tìm thấy thông tin đơn!")
     }
   })
@@ -523,19 +523,19 @@ export function* saga() {
   http://localhost:8080/Fitnees/
 
   yield takeLatest(actionTypes.RequestUpdate, function* updateUserRequested(param: any) {
-    const { data: result } = yield updateOrder(param.payload.orderid,param.payload.mode,param.payload.check)
-    if (result && result.videoview) {
-      yield put(actions.updateMultiSuccess(result.videoview))
+    const { data: result } = yield updateOrder(param.payload.orderid,param.payload.check_current,param.payload.check_end_time)
+    if (result && result.order_history) {
+      yield put(actions.updateMultiSuccess(result.order_history))
     } else {
       yield put(actions.updateFail(result.message))
     }
 
   })
 
-  yield takeLatest(actionTypes.RequestUpdateCmt, function* updateUserRequestedCmt(param: any) {
-    const { data: result } = yield updateOrderCmt(param.payload.orderid)
-    if (result && result.videocomment) {
-      yield put(actions.updateMultiCmtSuccess(result.videocomment))
+  yield takeLatest(actionTypes.RequestUpdateRefill, function* updateUserRequestedCmt(param: any) {
+    const { data: result } = yield updateOrderRefill(param.payload.orderid)
+    if (result && result.order_history) {
+      yield put(actions.updateMultiRefillSuccess(result.order_history))
     } else {
       yield put(actions.updateFail(result.message))
     }
@@ -587,9 +587,9 @@ export function* saga() {
 
   yield takeLatest(actionTypes.UpdateMultiOrderRequest, function* updateUserRequested(param: any) {
     try {
-      const { data: result } = yield updateOrder(param.payload.orderid,param.payload.mode,param.payload.check)
-        if (result && result.videoview) {
-          yield put(actions.updateMultiSuccess(result.videoview))
+      const { data: result } = yield updateOrder(param.payload.orderid,param.payload.check_current,param.payload.check_end_time)
+        if (result && result.order_history) {
+          yield put(actions.updateMultiSuccess(result.order_history))
         } else {
           yield put(actions.addOrderFail(result.message))
         } 

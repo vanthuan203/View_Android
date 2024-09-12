@@ -50,7 +50,7 @@ const UserListLimit: React.FC<Props> = ({ className, accounts }) => {
         <div className="page-header__content">
           <div className="align-items-center row" style={{margin:10}}>
             <div className="col-lg-12 col-sm-12 c-order__header">
-              <span  className='fw-bolder fs-3 mb-1'>Giới hạn service</span>
+              <span  className='fw-bolder fs-3 mb-1'>Tasks Priority</span>
             </div>
           </div>
         </div>
@@ -65,10 +65,11 @@ const UserListLimit: React.FC<Props> = ({ className, accounts }) => {
             {/* begin::Table head */}
             <thead>
               <tr className='fw-bolder text-muted'>
-                <th className='min-w-100px'>User</th>
-                <th className='min-w-100px'>Service</th>
-                <th className='min-w-100px'>MaxOrder</th>
-                <th className='min-w-100px'>MaxRunning</th>
+                <th className='min-w-100px'>Platform</th>
+                <th className='min-w-100px'>Task</th>
+                <th className='min-w-100px'>Priority</th>
+                <th className='min-w-100px'>State</th>
+                <th className='min-w-100px'>Update Time</th>
               </tr>
             </thead>
             {/* end::Table head */}
@@ -77,7 +78,7 @@ const UserListLimit: React.FC<Props> = ({ className, accounts }) => {
             <tbody>
               {
                   accounts&&accounts?.map((item: AccountLimitModel,index:number) => {
-                      return <UserItemLimit key={item.id+index} item={item} index={index} />
+                      return <UserItemLimit key={item.task} item={item} index={index} />
                     })
               }
 

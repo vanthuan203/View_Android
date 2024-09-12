@@ -80,7 +80,7 @@ const Topbar: FC = () => {
         useEff=useEff+1
         setuseEff(useEff)
         if(useEff<=1&&user.role==='ROLE_ADMIN'){
-            getcounts()
+            //getcounts()
         }
         handleWindowResize();
         window.addEventListener('resize', handleWindowResize);
@@ -92,7 +92,7 @@ const Topbar: FC = () => {
             // Thêm sự kiện lắng nghe để kiểm tra kích thước cửa sổ khi cửa sổ thay đổi
             window.addEventListener('resize', handleWindowResize);
             if(window.innerWidth > 800){
-                getnow()
+                //getnow()
             }
         }
 
@@ -105,7 +105,7 @@ const Topbar: FC = () => {
             // Thêm sự kiện lắng nghe để kiểm tra kích thước cửa sổ khi cửa sổ thay đổi
             window.addEventListener('resize', handleWindowResize);
             if(window.innerWidth > 800){
-                get5M()
+                //get5M()
             }
         }
 
@@ -152,7 +152,7 @@ const Topbar: FC = () => {
                     height: "100%"
                 }} className="pl-0 text-left">
                     <button
-                            onClick={() => {getcounts()
+                            onClick={() => {//getcounts()
                             }}
                             className='btn btn-sm'
                     >

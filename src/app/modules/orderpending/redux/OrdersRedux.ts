@@ -8,12 +8,12 @@ import {
   getListOrder,
   getOrderFilter,
   updateOrder,
-  updateThreadPending,
+  updateThread,
   addOrder,
   addOrderManual,
   deleteChannel,
   addOrderMulti,
-  getOrderPercentFilter, updatePriority,updateThread
+  getOrderPercentFilter
 } from './OrdersCRUD'
 const sleep = (milliseconds: number) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -23,38 +23,38 @@ export interface ActionWithPayload<T> extends Action {
 }
 
 export const actionTypes = {
-  ShowOrdersFilter:'[Orderpending] Filter',
-  ShowOrdersPercentFilter:'[Orderpending] Percent Filter',
-  RequestOrders: '[Orderpending] Requested',
-  OrdersLoadedSuccess: '[Orderpending] Loaded succcess',
-  OrdersLoadedFail: '[Orderpending] load fail',
-  AddOrderRequest: '[Orderpending] Add Order Request',
-  AddOrderManualRequest: '[Orderpending] Add Order Manual Request',
-  AddOrderSuccess: '[Orderpending] Add Order Success',
-  AddOrdersSuccess: '[Orderpending] Add Orders Success',
-  AddOrderFail: '[Orderpending] Add Order Fail',
-  ShowcurrentOrder: '[Orderpending] Show Order',
-  RequestUpdate: '[Orderpending] Requested Update',
-  RequestUpdateThread: '[Orderpending] Requested UpdateThread',
-  UpdateMultiOrderRequest: '[Orderpending] Update Multi Order Request',
-  UpdateMultiThreadRequest: '[Orderpending] Update Multi Thread Request',
-  UpdateSuccess: '[Orderpending] Update Success',
-  UpdateMultiSuccess: '[Orderpending] Update Multi Success',
-  UpdateFail: '[Orderpending] Update Fail',
-  ClearSelected: '[Orderpending] Clear selected account',
-  GroupLoadedRequest: '[Orderpending] Group Loaded Request',
-  GroupLoadedSuccess: '[Orderpending] Group Loaded Success',
-  GroupLoadedFail: '[Orderpending] Group Loaded Fail',
-  GroupAddRequest: '[Orderpending] GroupAddRequest',
-  GroupAddSuccess: '[Orderpending] Group Add Success',
-  GroupAddFail: '[Orderpending] Group Add Fail',
-  GroupDeleteRequest: '[Orderpending] Group Delete Request',
-  GroupDeleteSuccess: '[Orderpending] Group Delete Success',
-  SelectGroup: '[Orderpending] Select Group',
-  DeleteOrderRequest: '[Orderpending] Delete Order Request',
-  DeleteOrderSuccess: '[Orderpending] Delete Order Success',
-  CheckedChange: '[Orderpending] Checked Change',
-  CheckedAllChange: '[Orderpending] Checked All Change',
+  ShowOrdersFilter:'[Pending] Filter',
+  ShowOrdersPercentFilter:'[OrderPending] Percent Filter',
+  RequestOrders: '[Pending] Requested',
+  OrdersLoadedSuccess: '[Pending] Loaded succcess',
+  OrdersLoadedFail: '[Pending] load fail',
+  AddOrderRequest: '[Pending] Add Order Request',
+  AddOrderManualRequest: '[Pending] Add Order Manual Request',
+  AddOrderSuccess: '[Pending] Add Order Success',
+  AddOrdersSuccess: '[Pending] Add Orders Success',
+  AddOrderFail: '[Pending] Add Order Fail',
+  ShowcurrentOrder: '[Pending] Show Order',
+  RequestUpdate: '[Pending] Requested Update',
+  RequestUpdateThread: '[Pending] Requested UpdateThread',
+  UpdateMultiOrderRequest: '[Pending] Update Multi Order Request',
+  UpdateMultiThreadRequest: '[Pending] Update Multi Thread Request',
+  UpdateSuccess: '[Pending] Update Success',
+  UpdateMultiSuccess: '[Pending] Update Multi Success',
+  UpdateFail: '[Pending] Update Fail',
+  ClearSelected: '[Pending] Clear selected account',
+  GroupLoadedRequest: '[Pending] Group Loaded Request',
+  GroupLoadedSuccess: '[Pending] Group Loaded Success',
+  GroupLoadedFail: '[Pending] Group Loaded Fail',
+  GroupAddRequest: '[Pending] GroupAddRequest',
+  GroupAddSuccess: '[Pending] Group Add Success',
+  GroupAddFail: '[Pending] Group Add Fail',
+  GroupDeleteRequest: '[Pending] Group Delete Request',
+  GroupDeleteSuccess: '[Pending] Group Delete Success',
+  SelectGroup: '[Pending] Select Group',
+  DeleteOrderRequest: '[Pending] Delete Order Request',
+  DeleteOrderSuccess: '[Pending] Delete Order Success',
+  CheckedChange: '[Pending] Checked Change',
+  CheckedAllChange: '[Pending] Checked All Change',
 }
 
 const initialorderstate: Iorderstate = {
@@ -139,7 +139,7 @@ export const reducer = persistReducer(
         return {
           ...state,
           orders: state.orders.filter((item: OrderModel) => {
-            if (action.payload?.videoid.indexOf(item.videoid)>=0) {
+            if (action.payload?.order_id.indexOf(item.order_id)>=0) {
               return false
             }
             return true
@@ -179,8 +179,8 @@ export const reducer = persistReducer(
       }
       case actionTypes.UpdateSuccess: {
         const remaporders = state.orders.map((item: OrderModel) => {
-          if (item.videoid === action.payload?.videoview?.videoid) {
-            return action.payload?.videoview
+          if (item.order_id == action.payload?.order_running?.order_id) {
+            return action.payload?.order_running
           } else {
             return item
           }
@@ -194,8 +194,8 @@ export const reducer = persistReducer(
       }
       case actionTypes.UpdateMultiSuccess: {
         const remaporders = state.orders.map((item: OrderModel) => {
-          const findItem = action.payload?.videoview.find((_item:OrderModel)=>{
-            if(_item.videoid===item.videoid){
+          const findItem = action.payload?.order_running.find((_item:OrderModel)=>{
+            if(_item.order_id==item.order_id){
               return true
             }
             return false
@@ -275,7 +275,7 @@ export const reducer = persistReducer(
         return {
           ...state,
           orders:  state.orders.map(item=>{
-            if(item.videoid===action.payload?.data?.videoid){
+            if(item.order_id==action.payload?.data?.order_id){
               return {
                 ...item,
                 checked:action?.payload?.data?.checked
@@ -313,15 +313,15 @@ export const actions = {
   loadordersFail: (message: string) => ({ type: actionTypes.OrdersLoadedFail, payload: { message } }),
   addOrderRequest: (data: OrderForm) => ({ type: actionTypes.AddOrderRequest, payload: { data } }),
   addOrderManualRequest: (data: OrderFormManual) => ({ type: actionTypes.AddOrderManualRequest, payload: { data } }),
-  editMultiOrderRequest: (data: string) => ({ type: actionTypes.UpdateMultiOrderRequest, payload: { data } }),
+  editMultiOrderRequest: (data: OrderForm) => ({ type: actionTypes.UpdateMultiOrderRequest, payload: { data } }),
   editMultiThreadRequest: (data: OrderForm) => ({ type: actionTypes.UpdateMultiThreadRequest, payload: { data } }),
   addOrderSuccess: (order: OrderModel) => ({ type: actionTypes.AddOrderSuccess, payload: { order } }),
   addOrdersSuccess: (orders: OrderModel[]) => ({ type: actionTypes.AddOrdersSuccess, payload: { orders } }),
   addOrderFail: (message: string) => ({ type: actionTypes.AddOrderFail, payload: { message } }),
-  requestUpdate: (videoview: OrderUpdateForm) => ({ type: actionTypes.RequestUpdate, payload: { videoview } }),
-  requestUpdateThread: (videoview: OrderUpdateForm) => ({ type: actionTypes.RequestUpdateThread, payload: { videoview } }),
-  updateSuccess: (videoview: OrderModel[]) => ({ type: actionTypes.UpdateSuccess, payload: { videoview } }),
-  updateMultiSuccess: (videoview: OrderModel[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { videoview } }),
+  requestUpdate: (order_running: OrderUpdateForm) => ({ type: actionTypes.RequestUpdate, payload: { order_running } }),
+  requestUpdateThread: (order_running: OrderUpdateForm) => ({ type: actionTypes.RequestUpdateThread, payload: { order_running } }),
+  updateSuccess: (order_running: OrderModel[]) => ({ type: actionTypes.UpdateSuccess, payload: { order_running } }),
+  updateMultiSuccess: (order_running: OrderModel[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { order_running } }),
   updateFail: (message: string) => ({ type: actionTypes.UpdateFail, payload: { message } }),
   showcurrentOrder: (currentOrder: OrderModel) => ({ type: actionTypes.ShowcurrentOrder, payload: { currentOrder } }),
   clearcurrentOrder: () => ({ type: actionTypes.ClearSelected }),
@@ -332,9 +332,9 @@ export const actions = {
   deleteGroupRequest: (id: number) => ({ type: actionTypes.GroupDeleteRequest, payload: { id } }),
   deleteGroupSuccess: (id: number) => ({ type: actionTypes.GroupDeleteSuccess, payload: { id } }),
   selectGroup: (group: Group) => ({ type: actionTypes.SelectGroup, payload: { group } }),
-  deleteOrderRequest: (videoid: string,cancel:number) => ({ type: actionTypes.DeleteOrderRequest, payload: { videoid,cancel } }),
-  deleteOrderSuccess: (videoid: string,cancel:number) => ({ type: actionTypes.DeleteOrderSuccess, payload: { videoid,cancel } }),
-  checkedChange: (data:{videoid:string,checked:boolean}) => ({ type: actionTypes.CheckedChange, payload: { data } }),
+  deleteOrderRequest: (order_id: string,cancel:number) => ({ type: actionTypes.DeleteOrderRequest, payload: { order_id,cancel } }),
+  deleteOrderSuccess: (order_id: string,cancel:number) => ({ type: actionTypes.DeleteOrderSuccess, payload: { order_id,cancel } }),
+  checkedChange: (data:{order_id:number,checked:boolean}) => ({ type: actionTypes.CheckedChange, payload: { data } }),
   checkedAllChange: (checked:boolean) => ({ type: actionTypes.CheckedAllChange, payload: { checked } }),
 }
 
@@ -342,18 +342,18 @@ export function* saga() {
   yield takeLatest(actionTypes.RequestOrders, function* userRequested(param: any) {
     const payload = param.payload.user
     const { data: orders } = yield getListOrder(payload)
-    yield put(actions.fulfillorders(orders.videoview))
+    yield put(actions.fulfillorders(orders.order_running))
   })
   yield takeLatest(actionTypes.ShowOrdersFilter, function* userRequestedd(param: any) {
     const payload = param.payload
     const { data: orders } = yield getOrderFilter(payload.key,payload.user)
-    yield put(actions.fulfillorders(orders.videoview))
+    yield put(actions.fulfillorders(orders.order_running))
   })
 
   yield takeLatest(actionTypes.ShowOrdersPercentFilter, function* userRequestedd(param: any) {
     const payload = param.payload
     const { data: orders } = yield getOrderPercentFilter(payload.key,payload.user)
-    yield put(actions.fulfillorders(orders.videoview))
+    yield put(actions.fulfillorders(orders.order_running))
   })
 
 
@@ -365,9 +365,9 @@ export function* saga() {
 
 
   yield takeLatest(actionTypes.RequestUpdate, function* updateUserRequested(param: any) {
-    const { data: result } = yield updateOrder(param.payload.videoview)
-    if (result && result.videoview) {
-      yield put(actions.updateMultiSuccess(result.videoview))
+    const { data: result } = yield updateOrder(param.payload.order_running)
+    if (result && result.order_running) {
+      yield put(actions.updateMultiSuccess(result.order_running))
     } else {
       alert(result.message)
       yield put(actions.addOrderFail(result.message))
@@ -376,9 +376,9 @@ export function* saga() {
   })
 
   yield takeLatest(actionTypes.RequestUpdateThread, function* updateUserRequested(param: any) {
-    const { data: result } = yield updateThread(param.payload.videoview)
-    if (result && result.videoview) {
-      yield put(actions.updateMultiSuccess(result.videoview))
+    const { data: result } = yield updateThread(param.payload.order_running)
+    if (result && result.order_running) {
+      yield put(actions.updateMultiSuccess(result.order_running))
     } else {
       alert(result.message)
       yield put(actions.addOrderFail(result.message))
@@ -390,8 +390,8 @@ export function* saga() {
     const payload = param.payload.data
     try {
         const { data: result } = yield addOrderManual(payload)
-        if (result && (result.videoview)) {
-            yield put(actions.addOrderSuccess(result.videoview))
+        if (result && (result.order_running)) {
+            yield put(actions.addOrderSuccess(result.order_running))
         } else {
           yield put(actions.addOrderFail(result.message))
         }
@@ -423,12 +423,12 @@ export function* saga() {
   yield takeLatest(actionTypes.UpdateMultiOrderRequest, function* addOrderRequest(param: any) {
     const payload = param.payload.data
     try {
-        const { data: result } = yield updateThreadPending(payload)
-        if (result && result.videoview) {
-          yield put(actions.updateMultiSuccess(result.videoview))
+        const { data: result } = yield updateOrder(payload)
+        if (result && result.order_running) {
+          yield put(actions.updateMultiSuccess(result.order_running))
         } else {
           yield put(actions.addOrderFail(result.message))
-        }
+        } 
     } catch (error) {
       yield put(actions.addOrderFail(""))
     }
@@ -437,9 +437,9 @@ export function* saga() {
   yield takeLatest(actionTypes.UpdateMultiThreadRequest, function* addOrderRequest(param: any) {
     const payload = param.payload.data
     try {
-      const { data: result } = yield updatePriority(payload)
-      if (result && result.videoview) {
-        yield put(actions.updateMultiSuccess(result.videoview))
+      const { data: result } = yield updateThread(payload)
+      if (result && result.order_running) {
+        yield put(actions.updateMultiSuccess(result.order_running))
       } else {
         yield put(actions.addOrderFail(result.message))
       }
@@ -451,9 +451,9 @@ export function* saga() {
   yield takeLatest(actionTypes.DeleteOrderRequest, function* DeleteOrderRequest(param: any) {
     try {
       const payload = param.payload
-      const { data: result } = yield deleteChannel(payload.videoid,payload.cancel)
-      if (result&&result.videoview!==null) {
-        yield put(actions.deleteOrderSuccess(payload.videoid,payload.cancel))
+      const { data: result } = yield deleteChannel(payload.order_id,payload.cancel)
+      if (result&&result.order_running!==null) {
+        yield put(actions.deleteOrderSuccess(payload.order_id,payload.cancel))
       } else {
 
       }

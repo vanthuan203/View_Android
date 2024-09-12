@@ -25,9 +25,13 @@ export function AuthPage() {
       {/* begin::Content */}
       <div className='d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20'>
         {/* begin::Logo */}
-        <a href='#' className='mb-12'>
-          <img alt='Logo' src={toAbsoluteUrl('/media/logos/logo-1.svg')} className='h-45px' />
-        </a>
+        <div style={{display:""}} >
+          <span  style={{float:"left"}}>
+            <img alt='Logo' src={toAbsoluteUrl('/media/icons/duotune/social/soc002.svg')} className='h-100px' />
+          </span>
+          <span className='h-100px' style={{float:"left",fontFamily:"fantasy",color:"#307e36",fontSize:35,fontWeight:"bold"}}>✔</span>
+        </div>
+
         {/* end::Logo */}
         {/* begin::Wrapper */}
         <div className='w-lg-500px bg-white rounded shadow-sm p-10 p-lg-15 mx-auto'>

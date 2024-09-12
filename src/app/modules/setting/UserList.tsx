@@ -16,7 +16,7 @@ type Props = {
 }
 
 const UserList: React.FC<Props> = ({ className, accounts }) => {
-
+  console.log(accounts)
   const dispatch = useDispatch()
   const API_URL = process.env.REACT_APP_API_URL
   const [loading, setLoading] = useState(true)
@@ -40,23 +40,7 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
     }
     return false
   })
-
-  async function getcountsbyendtrial(){
-    const requestUrl = API_URL+'vps/DellALL';
-    const response= await fetch(requestUrl,{
-      method: 'get',
-      headers: new Headers({
-        'Authorization': '1',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      })
-    });
-    const responseJson= await  response.json();
-    const {status}=responseJson;
-    if(status==="true"){
-      setstatusTrue(1)
-    }
-  }
-
+  
   useEffect(() => {
   },[]);
 
@@ -68,7 +52,7 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
         <div className="page-header__content">
           <div className="align-items-center row" style={{margin:10}}>
             <div className="col-lg-12 col-sm-12 c-order__header">
-              <span  className='fw-bolder fs-3 mb-1'>Cài đặt hệ thống</span>
+              <span  className='fw-bolder fs-3 mb-1'>Systems</span>
             </div>
           </div>
         </div>
@@ -83,14 +67,11 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
             {/* begin::Table head */}
             <thead>
               <tr className='fw-bolder text-muted'>
-                <th className='min-w-100px'>Bonus</th>
-                <th className='min-w-100px'>MaxorderVN</th>
-                <th className='min-w-100px'>MaxorderUS</th>
-                <th className='min-w-100px'>MaxR BuffH VN</th>
-                <th className='min-w-100px'>MaxR BuffH US</th>
-                <th className='min-w-100px'>ThreadMin</th>
-                <th style={{color:"red"}} className='min-w-100px'>Redirect BuffH VN</th>
-                <th style={{color:"red"}} className='min-w-100px'>Redirect BuffH US</th>
+                <th className='min-w-100px'>Max Account</th>
+                <th className='min-w-100px'>Max MySQL</th>
+                <th className='min-w-100px'>Max Profile</th>
+                <th className='min-w-100px'>Max Task</th>
+                <th className='min-w-100px'>Update Time</th>
               </tr>
             </thead>
             {/* end::Table head */}

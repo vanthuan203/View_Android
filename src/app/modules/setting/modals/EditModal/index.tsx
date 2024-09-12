@@ -23,43 +23,21 @@ const EditModal: React.FC<Props> = ({ item }) => {
     console.log("------item------", item)
     const dispatch = useDispatch()
     const API_URL = process.env.REACT_APP_API_URL
-    const [pricerate, setpricerate] = useState(item.pricerate)
-    const [bonus, setbonus] = useState(item.bonus)
-    const [maxordervn, setmaxordervn] = useState(item.maxordervn)
-    const [maxorderus, setmaxorderus] = useState(item.maxorderus)
-    const [maxorderbuffhus, setmaxorderbuffhus] = useState(item.maxorderbuffhus)
-    const [maxorderbuffhvn, setmaxorderbuffhvn] = useState(item.maxorderbuffhvn)
-    const [threadmin, setthreadmin] = useState(item.threadmin)
-    const [redirectvn, setredirectvn] = useState(item.redirectvn)
-    const [redirectus, setredirectus] = useState(item.redirectus)
+    const [max_acc, setMax_acc] = useState(item.max_acc)
+    const [max_mysql, setMax_mysql] = useState(item.max_mysql)
+    const [max_profile, setMax_profile] = useState(item.max_profile)
+    const [max_task, setMax_task] = useState(item.max_task)
 
     const dismissModal = () => {
         dispatch(actions.clearCurrentAccount())
     }
     const updateUser = () => {
-        if(pricerate<0){
-            alert("Số tiền nhỏ nhất là 0đ!")
-            return
-        }
-        if(bonus>100 || bonus<0){
-            alert("Giá trị bonus không hợp lệ!")
-            return
-        }
-        if(maxordervn<0 || maxorderus <0){
-            alert("Giá trị số đơn max không hợp lệ!")
-            return
-        }
         dispatch(actions.requestUpdate({
             ...item,
-            pricerate,
-            bonus,
-            maxordervn,
-            maxorderus,
-            maxorderbuffhvn,
-            maxorderbuffhus,
-            threadmin,
-            redirectvn,
-            redirectus,
+            max_acc,
+            max_mysql,
+            max_profile,
+            max_task
         }))
     }
 
@@ -74,68 +52,33 @@ const EditModal: React.FC<Props> = ({ item }) => {
                     </div>
                 </div>
                 <div className="modal-body">
-                    <p style={{fontWeight:'bold'}}>Bonus</p>
+                    <p style={{fontWeight:'bold'}}>Max Account</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={bonus} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setbonus(parseInt(e.target.value))}
+                        <input style={{fontWeight:'bold'}} value={max_acc} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                               onChange={(e) => setMax_acc(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">%</span>
+                        <span className="input-group-text" id="basic-addon2">account</span>
                     </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn max(VN)</p>
+                    <p style={{fontWeight:'bold'}}>Max MySQL</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxordervn} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxordervn(parseInt(e.target.value))}
+                        <input style={{fontWeight:'bold'}} value={max_mysql} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                               onChange={(e) => setMax_mysql(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
+                        <span className="input-group-text" id="basic-addon2">process</span>
                     </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn max(US)</p>
+                    <p style={{fontWeight:'bold'}}>Max Profile</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorderus} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxorderus(parseInt(e.target.value))}
+                        <input style={{fontWeight:'bold'}} value={max_profile} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                               onChange={(e) => setMax_profile(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
+                        <span className="input-group-text" id="basic-addon2">profile</span>
                     </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn max(US)</p>
+                    <p style={{fontWeight:'bold'}}>Max Task</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorderus} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxorderus(parseInt(e.target.value))}
+                        <input style={{fontWeight:'bold'}} value={max_task} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                               onChange={(e) => setMax_task(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
-                    </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn giờ VN chạy(MAX)</p>
-                    <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorderbuffhvn} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxorderbuffhvn(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
-                    </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn giờ US chạy(MAX)</p>
-                    <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorderbuffhus} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxorderbuffhus(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
-                    </div>
-                    <p style={{fontWeight:'bold'}}>Min Thread View(%)</p>
-                    <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={threadmin} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setthreadmin(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">%</span>
-                    </div>
-                    <p style={{fontWeight:'bold'}}>Redirect VN BuffH</p>
-                    <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={redirectvn} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setredirectvn(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">/1000</span>
-                    </div>
-                    <p style={{fontWeight:'bold'}}>Redirect US BuffH</p>
-                    <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={redirectus} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setredirectus(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">/1000</span>
+                        <span className="input-group-text" id="basic-addon2">task</span>
                     </div>
                 </div>
                 <div className="modal-footer">

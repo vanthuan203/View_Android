@@ -23,7 +23,7 @@ const EditModal: React.FC<Props> = ({ item }) => {
     const API_URL = process.env.REACT_APP_API_URL
     let [balance, setbalance] = useState(0)
     const [discount, setdiscount] = useState(item.discount)
-    const [maxorder, setmaxorder] = useState(item.maxorder)
+    const [max_order, setmaxorder] = useState(item.max_order)
     const [note, setnote] = useState(item.note)
     const [rate, setrate] = useState(item.rate)
     const [vip, setvip] = useState(item.vip)
@@ -32,16 +32,16 @@ const EditModal: React.FC<Props> = ({ item }) => {
         dispatch(actions.clearCurrentAccount())
     }
     const updateUser = () => {
-        if(rate<100){
-            alert("% rate không hợp lệ!")
+        if(rate<0){
+            alert("% Rate không hợp lệ!")
             return
         }
         if(discount>100 || discount<0){
             alert("% Discount không hợp lệ!")
             return
         }
-        if(maxorder<0){
-            alert("Giá trị số đơn max không hợp lệ!")
+        if(max_order<0){
+            alert("Giá trị Max Orders không hợp lệ!")
             return
         }
         console.log(add)
@@ -53,7 +53,7 @@ const EditModal: React.FC<Props> = ({ item }) => {
             ...item,
             balance,
             discount,
-            maxorder,
+            max_order,
             vip,
             note,
             rate,
@@ -108,12 +108,12 @@ const EditModal: React.FC<Props> = ({ item }) => {
                         />
                         <span className="input-group-text" id="basic-addon2">%</span>
                     </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn max</p>
+                    <p style={{fontWeight:'bold'}}>Max Orders</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorder} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                        <input style={{fontWeight:'bold'}} value={max_order} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
                                onChange={(e) => setmaxorder(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
+                        <span className="input-group-text" id="basic-addon2">order</span>
                     </div>
                     <p style={{fontWeight:'bold'}}>User Vip</p>
                     <div className="input-group mb-5">

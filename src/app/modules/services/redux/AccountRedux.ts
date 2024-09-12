@@ -4,8 +4,6 @@ import storage from 'redux-persist/lib/storage'
 import { put, takeLatest } from 'redux-saga/effects'
 import { AccountModel,AccountForm } from '../models/Account'
 import {getListAccount, updateAccount, deleteVps, updateResetVPS} from './AccountCRUD'
-import {OrderForm, OrderModel} from "../../orders/models/Order";
-import {deleteChannel, updateOrder} from "../../orders/redux/OrdersCRUD";
 export interface ActionWithPayload<T> extends Action {
   payload?: T
 }
@@ -31,17 +29,17 @@ export const actionTypes = {
 }
 
 const initialAccountState: IAccountState = {
-  accounts: [],
+  services: [],
   loading: false,
   adding:false,
-  currentAccount:undefined
+  currentService:undefined
 }
 
 export interface IAccountState {
-  accounts: AccountModel[]
+  services: AccountModel[]
   loading: boolean
   adding:boolean
-  currentAccount?:AccountModel
+  currentService?:AccountModel
 }
 
 export const reducer = persistReducer(
@@ -51,21 +49,21 @@ export const reducer = persistReducer(
       case actionTypes.RequestAccounts: {
         return {
           ...state,
-          accounts: [],
+          services: [],
           loading: true
         }
       }
       case actionTypes.AccountsLoadedSuccess: {
         return {
           ...state,
-          accounts: action.payload?.accounts || [],
+          services: action.payload?.services || [],
           loading: false
         }
       }
       case actionTypes.AccountsLoadedFail: {
         return {
           ...state,
-          accounts: [],
+          services: [],
           loading: false
         }
       }
@@ -77,25 +75,25 @@ export const reducer = persistReducer(
       }
       case actionTypes.UpdateSuccess: {
 
-        const remapAccounts = state.accounts.map((item: AccountModel)=>{
-          if(item.service===action.payload?.account?.service){
-            return action.payload?.account
+        const remapAccounts = state.services.map((item: AccountModel)=>{
+          if(item.service_id===action.payload?.service?.service_id){
+            return action.payload?.service
           }else {
             return item
           }
         })
         return {
           ...state,
-          accounts: remapAccounts,
+          services: remapAccounts,
           loading: false,
-          currentAccount: undefined
+          currentService: undefined
         }
       }
       case actionTypes.DeleteVpsSuccess: {
         return {
           ...state,
-          accounts: state.accounts.filter((item: AccountModel) => {
-            if (action.payload?.service.indexOf(item.service)>=0)  {
+          services: state.services.filter((item: AccountModel) => {
+            if (action.payload?.service.indexOf(item.service_id)>=0)  {
               return false
             }
             return true
@@ -111,21 +109,21 @@ export const reducer = persistReducer(
       case actionTypes.ShowCurrentAccount: {
         return {
           ...state,
-          currentAccount: action.payload?.currentAccount
+          currentService: action.payload?.currentService
         }
       }
       case actionTypes.ClearSelected: {
         return {
           ...state,
-          currentAccount: action.payload?.currentAccount
+          currentService: action.payload?.currentService
         }
       }
 
       case actionTypes.CheckedChange: {
         return {
           ...state,
-          accounts:  state.accounts.map(item=>{
-            if(item.service===action.payload?.data?.service){
+          services:  state.services.map(item=>{
+            if(item.service_id===action.payload?.data?.service_id){
               return {
                 ...item,
                 checked:action?.payload?.data?.checked
@@ -138,7 +136,7 @@ export const reducer = persistReducer(
       case actionTypes.CheckedAllChange: {
         return {
           ...state,
-          accounts:  state.accounts.map(item=>{
+          services:  state.services.map(item=>{
             return {
               ...item,
               checked:action?.payload?.checked
@@ -159,9 +157,9 @@ export const reducer = persistReducer(
         }
       }
       case actionTypes.UpdateMultiSuccess: {
-        const remaporders = state.accounts.map((item:AccountForm) => {
-          const findItem = action.payload?.accounts.find((_item:AccountForm)=>{
-            if(_item.service===item.service){
+        const remaporders = state.services.map((item:AccountForm) => {
+          const findItem = action.payload?.services.find((_item:AccountForm)=>{
+            if(_item.service_id===item.service_id){
               return true
             }
             return false
@@ -173,10 +171,10 @@ export const reducer = persistReducer(
         })
         return {
           ...state,
-          accounts: remaporders,
+          services: remaporders,
           loading: false,
           adding: false,
-          currentAccount: undefined
+          currentService: undefined
         }
       }
       default:
@@ -187,12 +185,12 @@ export const reducer = persistReducer(
 
 export const actions = {
   requestAccounts: () => ({ type: actionTypes.RequestAccounts }),
-  fulfillAccounts: (accounts: AccountModel[]) => ({ type: actionTypes.AccountsLoadedSuccess, payload: { accounts } }),
+  fulfillAccounts: (services: AccountModel[]) => ({ type: actionTypes.AccountsLoadedSuccess, payload: { services } }),
   loadAccountsFail: (message: string) => ({ type: actionTypes.AccountsLoadedFail, payload: { message } }),
-  requestUpdate: (account: AccountModel) => ({ type: actionTypes.RequestUpdate, payload: { account } }),
-  updateSuccess: (account: AccountModel) => ({ type: actionTypes.UpdateSuccess, payload: { account } }),
+  requestUpdate: (service: AccountForm) => ({ type: actionTypes.RequestUpdate, payload: { service } }),
+  updateSuccess: (service: AccountModel) => ({ type: actionTypes.UpdateSuccess, payload: { service } }),
   updateFail: (message: string) => ({ type: actionTypes.UpdateFail, payload: { message } }),
-  showCurrentAccount: (currentAccount: AccountModel) => ({ type: actionTypes.ShowCurrentAccount, payload: { currentAccount } }),
+  showCurrentAccount: (currentService: AccountModel) => ({ type: actionTypes.ShowCurrentAccount, payload: { currentService } }),
   clearCurrentAccount: () => ({ type: actionTypes.ClearSelected}),
   deleteVpsRequest: (vps: string) => ({ type: actionTypes.DeleteVpsRequest, payload: { vps } }),
   deleteVpsSuccess: (vps: string) => ({ type: actionTypes.DeleteVpsSuccess, payload: { vps } }),
@@ -200,19 +198,19 @@ export const actions = {
   checkedAllChange: (checked:boolean) => ({ type: actionTypes.CheckedAllChange, payload: { checked } }),
   editMultiOrderRequest: (data: AccountForm) => ({ type: actionTypes.UpdateMultiOrderRequest, payload: { data } }),
   editRestartMultiOrderRequest: (data: AccountForm) => ({ type: actionTypes.UpdateRestartMultiOrderRequest, payload: { data } }),
-  updateMultiSuccess: (accounts: AccountForm[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { accounts } }),
+  updateMultiSuccess: (services: AccountForm[]) => ({ type: actionTypes.UpdateMultiSuccess, payload: { services } }),
 }
 
 export function* saga() {
   yield takeLatest(actionTypes.RequestAccounts, function* userRequested(param: any) {
-    const {data: accounts} = yield getListAccount()
-    yield put(actions.fulfillAccounts(accounts.accounts))
+    const {data: services} = yield getListAccount()
+    yield put(actions.fulfillAccounts(services.services))
   })
   yield takeLatest(actionTypes.RequestUpdate, function* updateUserRequested(param: any) {
     //console.log("------update account param-----",param.payload.account)
-    const {data: account} = yield updateAccount(param.payload.account)
-    console.log("------update account res-----",account.account)
-    yield put(actions.updateSuccess(account.account))
+    const {data: service} = yield updateAccount(param.payload.service)
+    console.log("------update service res-----",service.service)
+    yield put(actions.updateSuccess(service.service))
   })
   yield takeLatest(actionTypes.DeleteVpsRequest, function* DeleteVpsRequest(param: any) {
     try {

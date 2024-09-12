@@ -5,7 +5,7 @@ import {OrderForm, OrderFormManual, OrderModel, OrderPost} from '../models/Order
 
 
 export async function getListOrder(user:string) {
-  const res:any = await getFunciton("auth/balance?user="+user)
+  const res:any = await getFunciton("balance/get_List_Balance?user="+user)
   return res
 }
 

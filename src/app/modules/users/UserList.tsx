@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import { KTSVG, toAbsoluteUrl } from '../../../_metronic/helpers'
 import { AccountModel } from 'app/modules/users/models/Account'
-
+import AddManualModal from './modals/AddManualModal'
 import UserItem from './components/UserItem'
 import {actions} from "./redux/AccountRedux";
 import {shallowEqual, useDispatch, useSelector} from 'react-redux'
@@ -49,9 +49,19 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
       <div className="page-header" style={{backgroundColor:'#c0e1ce'}}>
         <div className="page-header__content">
           <div className="align-items-center row" style={{margin:10}}>
-            <div className="col-lg-12 col-sm-12 c-order__header">
-              <span  className='fw-bolder fs-3 mb-1'>Danh sách User</span>
-              <span  className='ml-2 fw-bold fs-7'>({accounts.length} user)</span>
+            <div className="col-lg-7 col-sm-12 c-order__header">
+              <span  className='fw-bolder fs-3 mb-1'>Users</span>
+              <span  className='ml-2 fw-bold fs-7'>({accounts.length})</span>
+            </div>
+            <div className="col-lg-5 col-sm-12 text-right">
+              <button
+                  onClick={() => {
+                    setShowAddManual(true)
+                  }}
+                  className='btn btn-success'
+              >
+                Add User
+              </button>
             </div>
           </div>
         </div>
@@ -94,8 +104,15 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
         </div>
         {/* end::Table container */}
       </div>
+      <AddManualModal
+          show={showAddManual}
+          close={() => {
+            setShowAddManual(false)
+          }}
+      />
       {/* begin::Body */}
     </div>
+      
   )
 }
 export  { UserList }

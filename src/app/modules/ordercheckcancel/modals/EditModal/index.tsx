@@ -10,7 +10,6 @@ import {
 import {useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { RootState } from 'setup'
 import { Group } from '../../models/Order'
-import {updateAccount} from "../../../accounts/redux/AccountCRUD";
 import {updateOrder} from "../../redux/OrdersCRUD";
 import {toAbsoluteUrl} from "../../../../../_metronic/helpers";
 
@@ -26,8 +25,7 @@ const EditModal: React.FC<Props> = ({ item}) => {
             return i > 0 && c !== "." && (a.length - i) % 3 === 0 ? "," + c : c;
         });
     }
-    const price: number = useSelector<RootState>(({ auth }) => auth.user?.price, shallowEqual) as number || 0
-    const vip: number = useSelector<RootState>(({ auth }) => auth.user?.bonus, shallowEqual) as number || 0
+    
     const role: string = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual) as string || ""
     const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
     const username: string = useSelector<RootState>(({ auth }) => auth.user?.username, shallowEqual) as string || ""
@@ -123,16 +121,6 @@ const EditModal: React.FC<Props> = ({ item}) => {
                         </div>
                     </Form>
                 </div>
-                {role=="adc"&&
-                <div className="modal-body">
-                    <div className="card-body" style={{width: "100%"}}>
-                        {/* begin::Table container */}
-                        <span>Số tiền {vieworder<item.vieworder?"hoàn": "trả thêm"}: {format1(((vieworder<item.vieworder?(item.vieworder-vieworder):(vieworder-item.vieworder))/4000)*(price*(1-discount/100)+(vip!=1?(
-                            item.duration<3600?40000:item.duration<7200?20000:0):0)))}đ</span>
-                            <br/>
-                        {/* end::Table container */}
-                    </div>
-                </div>}
                 <div className="modal-footer">
                     <button type="button" onClick={dismissModal} className="btn btn-light" >Thoát</button>
                     <button  type="button"  onClick={submit} style={{backgroundColor:"#26695c",color:"white"}} className="btn">Lưu</button>

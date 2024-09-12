@@ -23,8 +23,8 @@ const EditLimitModal: React.FC<Props> = ({ item }) => {
     console.log("------item------", item)
     const dispatch = useDispatch()
     const API_URL = process.env.REACT_APP_API_URL
-    const [maxorder, setmaxorder] = useState(item.maxorder)
-    const [maxrunning, setmaxrunning] = useState(item.maxrunning)
+    const [priority, setPriority] = useState(item.priority)
+    const [state, setState] = useState(item.state)
 
     const dismissModal = () => {
         dispatch(actions.clearCurrentAccountLimit())
@@ -32,8 +32,8 @@ const EditLimitModal: React.FC<Props> = ({ item }) => {
     const updateUser = () => {
         dispatch(actions.requestUpdateLimit({
             ...item,
-            maxorder,
-            maxrunning
+            priority,
+            state
         }))
     }
 
@@ -42,25 +42,33 @@ const EditLimitModal: React.FC<Props> = ({ item }) => {
             modalTransition={{ timeout: 500 }}>
             <div className="modal-content">
                 <div className="modal-header">
-                    <h3 style={{fontWeight:'bold',fontFamily:'monospace'}}  className="modal-title">Update {item.user}</h3>
+                    <h3 style={{fontWeight:'bold',fontFamily:'monospace'}}  className="modal-title">Update {item.task.toUpperCase()}</h3>
                     <div className="btn btn-icon btn-sm btn-active-light-primary ms-2" aria-label="Close">
                         <span className="svg-icon svg-icon-2x"></span>
                     </div>
                 </div>
                 <div className="modal-body">
-                    <p style={{fontWeight:'bold'}}>Số đơn Pending</p>
+                    <p style={{fontWeight:'bold'}}>Priority</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxorder} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxorder(parseInt(e.target.value))}
+                        <input style={{fontWeight:'bold'}} value={priority} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
+                               onChange={(e) => setPriority(parseInt(e.target.value))}
                         />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
                     </div>
-                    <p style={{fontWeight:'bold'}}>Số đơn Running</p>
+                    <p style={{fontWeight:'bold'}}>State</p>
                     <div className="input-group mb-5">
-                        <input style={{fontWeight:'bold'}} value={maxrunning} type="number" className="form-control"  aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setmaxrunning(parseInt(e.target.value))}
-                        />
-                        <span className="input-group-text" id="basic-addon2">đơn</span>
+                        <Input style={{fontWeight: "bold"}}
+                               onChange={(e) => setState(parseInt(e.target.value))}
+                               className="form-control form-control-solid"
+                               type="select"
+                               value={state}
+                        >
+                            <option key={"1"} value={1}>
+                                ON
+                            </option>
+                            <option key={"0"} value={0}>
+                                OFF
+                            </option>
+                        </Input>
                     </div>
                 </div>
                 <div className="modal-footer">

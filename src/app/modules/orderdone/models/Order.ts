@@ -1,49 +1,40 @@
 export interface OrderModel {
-  orderid:number,
-  videoid: string,
-  videotitle: string,
+  order_id:number,
+  order_key: string,
+  order_link: string,
+  total_thread: number,
+  thread: number,
+  insert_time: number,
+  start_time: number,
+  update_time: number,
+  start_count: number,
   total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  insertdate: number,
-  timestart:number,
-  enddate: number,
+  quantity: number,
+  check_count: number,
+  current_count: number,
+  service_id: number,
+  charge: number,
   note: string,
-  view24h:number,
-  viewtotal:number,
-  duration:number,
-  user:string,
-  price:number,
-  service:number,
-  vieworder:number,
-  geo:string,
+  username: string,
+  task: string,
+  platform: string,
+  bonus:number,
+  priority:number,
+  update_current_time:number
+  
   checked?:boolean
 }
 
 export interface OrderModelChecked {
-  videoid: string,
+  order_id: number,
   id:number
 }
 
 export interface OrderUpdateForm {
-  orderid:number,
-  videoid: string,
-  videotitle: string,
-  total: number,
-  maxthreads: number,
-  channelid:string,
-  viewstart:number,
-  viewend:number,
-  insertdate: number,
-  enddate: number,
+  order_key:string,
+  thread: number,
   note: string,
-  view24h:number,
-  viewtotal:number,
-  service:number,
-  vieworder:number,
-  user:string
+  priority:number,
 }
 
 export interface OrderForm {

@@ -2,17 +2,17 @@ import { Action } from '@reduxjs/toolkit'
 import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { put, takeLatest } from 'redux-saga/effects'
-import { AccountModel,AccountForm,AccountLimitModel,AccountLimitForm,ProxySettingModel,ProxySettingForm } from '../models/Account'
+import { AccountModel,AccountForm,AccountLimitModel,AccountLimitForm,ProxySettingModel,ProxySettingForm ,PlatformModel} from '../models/Account'
 import {
   getListAccount,
   updateAccount,
   deleteVps,
   updateResetVPS,
   getListLimitService,
+  getListLimitPlatform,
+  updatePlatformLimit,
   updateAccountLimit,getListProxySetting,updateProxySetting
 } from './AccountCRUD'
-import {OrderForm, OrderModel} from "../../orders/models/Order";
-import {deleteChannel, updateOrder} from "../../orders/redux/OrdersCRUD";
 export interface ActionWithPayload<T> extends Action {
   payload?: T
 }
@@ -20,25 +20,32 @@ export interface ActionWithPayload<T> extends Action {
 export const actionTypes = {
   RequestAccounts: '[Setting] Requested',
   RequestAccountLimit: '[Setting] Requested Limit',
+  RequestPlatformLimit: '[Platform] Requested  Limit',
   RequestProxySetting: '[Proxy] Requested Setting',
   AccountsLoadedSuccess: '[Setting] Loaded succcess',
   AccountLimitLoadedSuccess: '[Setting] Loaded Limit succcess',
+  PlatformLimitLoadedSuccess: '[Platform] Loaded  Limit succcess',
   ProxySettingLoadedSuccess: '[Proxy] Loaded Setting succcess',
   AccountsLoadedFail: '[Setting] load fail',
   AccountLimitLoadedFail: '[Setting] load Limit fail',
+  PlatformLimitLoadedFail: '[Platform] load Limit fail',
   ProxySettingLoadedFail: '[Proxy] load Setting fail',
   ShowCurrentAccount: '[Setting] Show Account',
   ShowCurrentAccountLimit: '[Setting] Show Account Limit',
+  ShowCurrentPlatformLimit: '[Platform] Show Platform Limit',
   ShowCurrentProxySetting: '[Proxy] Show Setting Limit',
   RequestUpdate: '[Setting] Requested Update',
   RequestUpdateLimit: '[Setting] Requested Update Limit',
+  RequestUpdatePlatformLimit: '[Platform] Requested Update Limit',
   RequestUpdateProxySetting: '[Proxy] Requested Update Setting',
   UpdateSuccess: '[Setting] Update Success',
   UpdateLimitSuccess: '[Setting] Update Limit Success',
+  UpdatePlatformLimitSuccess: '[Platform] Update Limit Success',
   UpdateProxySettingSuccess: '[Proxy] Update Setting Success',
   UpdateFail: '[Setting] Update Fail',
   ClearSelected:'[Setting] Clear selected account',
   ClearSelectedLimit:'[Setting] Clear selected account limit',
+  ClearSelectedPlatformLimit:'[Platform] Clear selected account limit',
   ClearSelectedProxySetting:'[Proxy] Clear selected account Setting',
   DeleteVpsRequest: '[Setting] Delete Account Request',
   DeleteVpsSuccess: '[Setting] Delete Account Success',
@@ -54,22 +61,26 @@ export const actionTypes = {
 const initialAccountState: IAccountState = {
   accounts: [],
   accountlimit: [],
+  platformlimit: [],
   proxysetting: [],
   loading: false,
   adding:false,
   currentAccount:undefined,
   currentAccountLimit:undefined,
+  currentPlatformLimit:undefined,
   currentProxySetting:undefined
 }
 
 export interface IAccountState {
   accounts: AccountModel[]
   accountlimit: AccountLimitModel[]
+  platformlimit: PlatformModel[]
   proxysetting: ProxySettingModel[]
   loading: boolean
   adding:boolean
   currentAccount?:AccountModel
   currentAccountLimit?:AccountLimitModel
+  currentPlatformLimit?:PlatformModel
   currentProxySetting?:ProxySettingModel
 }
 
@@ -91,6 +102,13 @@ export const reducer = persistReducer(
           loading: true
         }
       }
+      case actionTypes.RequestPlatformLimit: {
+        return {
+          ...state,
+          platformlimit: [],
+          loading: true
+        }
+      }
             case actionTypes.RequestProxySetting: {
         return {
           ...state,
@@ -109,14 +127,21 @@ export const reducer = persistReducer(
       case actionTypes.AccountLimitLoadedSuccess: {
         return {
           ...state,
-          accountlimit: action.payload?.accountlimit || [],
+          accountlimit: action.payload?.task_priority || [],
+          loading: false
+        }
+      }
+      case actionTypes.PlatformLimitLoadedSuccess: {
+        return {
+          ...state,
+          platformlimit: action.payload?.platform || [],
           loading: false
         }
       }
       case actionTypes.ProxySettingLoadedSuccess: {
         return {
           ...state,
-          proxysetting: action.payload?.proxysetting || [],
+          proxysetting: action.payload?.setting_platform || [],
           loading: false
         }
       }
@@ -135,6 +160,13 @@ export const reducer = persistReducer(
           loading: false
         }
       }
+      case actionTypes.PlatformLimitLoadedFail: {
+        return {
+          ...state,
+          proxysetting: [],
+          loading: false
+        }
+      }
       case actionTypes.ProxySettingLoadedFail: {
         return {
           ...state,
@@ -150,6 +182,12 @@ export const reducer = persistReducer(
         }
       }
       case actionTypes.RequestAccountLimit: {
+        return {
+          ...state,
+          loading: true
+        }
+      }
+      case actionTypes.RequestPlatformLimit: {
         return {
           ...state,
           loading: true
@@ -180,8 +218,8 @@ export const reducer = persistReducer(
       case actionTypes.UpdateLimitSuccess: {
 
         const remapAccounts = state.accountlimit.map((item: AccountLimitModel)=>{
-          if(item.id===action.payload?.accountlimit?.id){
-            return action.payload?.accountlimit
+          if(item.task===action.payload?.task_priority?.task){
+            return action.payload?.task_priority
           }else {
             return item
           }
@@ -193,11 +231,27 @@ export const reducer = persistReducer(
           currentAccountLimit: undefined
         }
       }
+      case actionTypes.UpdatePlatformLimitSuccess: {
+
+        const remapAccounts = state.platformlimit.map((item: PlatformModel)=>{
+          if(item.platform===action.payload?.platform?.platform){
+            return action.payload?.platform
+          }else {
+            return item
+          }
+        })
+        return {
+          ...state,
+          platformlimit: remapAccounts,
+          loading: false,
+          currentPlatformLimit: undefined
+        }
+      }
       case actionTypes.UpdateProxySettingSuccess: {
 
         const remapAccounts = state.proxysetting.map((item: ProxySettingModel)=>{
-          if(item.id===action.payload?.proxysetting?.id){
-            return action.payload?.proxysetting
+          if(item.id===action.payload?.setting_platform?.id){
+            return action.payload?.setting_platform
           }else {
             return item
           }
@@ -238,6 +292,12 @@ export const reducer = persistReducer(
           currentAccountLimit: action.payload?.currentAccountLimit
         }
       }
+      case actionTypes.ShowCurrentPlatformLimit: {
+        return {
+          ...state,
+          currentPlatformLimit: action.payload?.currentPlatformLimit
+        }
+      }
       case actionTypes.ShowCurrentProxySetting: {
         return {
           ...state,
@@ -254,6 +314,12 @@ export const reducer = persistReducer(
         return {
           ...state,
           currentAccountLimit: action.payload?.currentAccountLimit
+        }
+      }
+      case actionTypes.ClearSelectedPlatformLimit: {
+        return {
+          ...state,
+          currentPlatformLimit: action.payload?.currentPlatformLimit
         }
       }
       case actionTypes.ClearSelectedProxySetting: {
@@ -329,23 +395,29 @@ export const reducer = persistReducer(
 export const actions = {
   requestAccounts: () => ({ type: actionTypes.RequestAccounts }),
   requestAccountLimit: () => ({ type: actionTypes.RequestAccountLimit }),
+  requestPlatformLimit: () => ({ type: actionTypes.RequestPlatformLimit }),
   requestProxySetting: () => ({ type: actionTypes.RequestProxySetting }),
   fulfillAccounts: (accounts: AccountModel[]) => ({ type: actionTypes.AccountsLoadedSuccess, payload: { accounts } }),
-  fulfillAccountLimit: (accountlimit: AccountLimitModel[]) => ({ type: actionTypes.AccountLimitLoadedSuccess, payload: { accountlimit } }),
-  fulfillProxySetting: (proxysetting: ProxySettingModel[]) => ({ type: actionTypes.ProxySettingLoadedSuccess, payload: { proxysetting } }),
+  fulfillAccountLimit: (task_priority: AccountLimitModel[]) => ({ type: actionTypes.AccountLimitLoadedSuccess, payload: { task_priority } }),
+  fulfillPlatformLimit: (platform: PlatformModel[]) => ({ type: actionTypes.PlatformLimitLoadedSuccess, payload: { platform } }),
+  fulfillProxySetting: (setting_platform: ProxySettingModel[]) => ({ type: actionTypes.ProxySettingLoadedSuccess, payload: { setting_platform } }),
   loadAccountsFail: (message: string) => ({ type: actionTypes.AccountsLoadedFail, payload: { message } }),
   requestUpdate: (account: AccountModel) => ({ type: actionTypes.RequestUpdate, payload: { account } }),
-  requestUpdateLimit: (accountlimit: AccountLimitModel) => ({ type: actionTypes.RequestUpdateLimit, payload: { accountlimit } }),
-  requestUpdateProxySetting: (proxysetting: ProxySettingModel) => ({ type: actionTypes.RequestUpdateProxySetting, payload: { proxysetting } }),
+  requestUpdateLimit: (task_priority: AccountLimitModel) => ({ type: actionTypes.RequestUpdateLimit, payload: { task_priority } }),
+  requestUpdatePlatformLimit: (platform: PlatformModel) => ({ type: actionTypes.RequestUpdatePlatformLimit, payload: { platform } }),
+  requestUpdateProxySetting: (setting_platform: ProxySettingModel) => ({ type: actionTypes.RequestUpdateProxySetting, payload: { setting_platform } }),
   updateSuccess: (account: AccountModel) => ({ type: actionTypes.UpdateSuccess, payload: { account } }),
-  updateLimitSuccess: (accountlimit: AccountLimitModel) => ({ type: actionTypes.UpdateLimitSuccess, payload: { accountlimit } }),
-  updateProxySettingSuccess: (proxysetting: ProxySettingModel) => ({ type: actionTypes.UpdateProxySettingSuccess, payload: { proxysetting } }),
+  updateLimitSuccess: (task_priority: AccountLimitModel) => ({ type: actionTypes.UpdateLimitSuccess, payload: { task_priority } }),
+  updatePlatformLimitSuccess: (platform: PlatformModel) => ({ type: actionTypes.UpdatePlatformLimitSuccess, payload: { platform } }),
+  updateProxySettingSuccess: (setting_platform: ProxySettingModel) => ({ type: actionTypes.UpdateProxySettingSuccess, payload: { setting_platform } }),
   updateFail: (message: string) => ({ type: actionTypes.UpdateFail, payload: { message } }),
   showCurrentAccount: (currentAccount: AccountModel) => ({ type: actionTypes.ShowCurrentAccount, payload: { currentAccount } }),
   showCurrentAccountLimit: (currentAccountLimit: AccountLimitModel) => ({ type: actionTypes.ShowCurrentAccountLimit, payload: { currentAccountLimit } }),
+  showCurrentPlatformLimit: (currentPlatformLimit: PlatformModel) => ({ type: actionTypes.ShowCurrentPlatformLimit, payload: { currentPlatformLimit } }),
   showCurrentProxySetting: (currentProxySetting: ProxySettingModel) => ({ type: actionTypes.ShowCurrentProxySetting, payload: { currentProxySetting } }),
   clearCurrentAccount: () => ({ type: actionTypes.ClearSelected}),
   clearCurrentAccountLimit: () => ({ type: actionTypes.ClearSelectedLimit}),
+  clearCurrentPlatformLimit: () => ({ type: actionTypes.ClearSelectedPlatformLimit}),
   clearCurrentProxySetting: () => ({ type: actionTypes.ClearSelectedProxySetting}),
   deleteVpsRequest: (vps: string) => ({ type: actionTypes.DeleteVpsRequest, payload: { vps } }),
   deleteVpsSuccess: (vps: string) => ({ type: actionTypes.DeleteVpsSuccess, payload: { vps } }),
@@ -362,12 +434,20 @@ export function* saga() {
     yield put(actions.fulfillAccounts(accounts.accounts))
   })
   yield takeLatest(actionTypes.RequestAccountLimit, function* userRequested(param: any) {
-    const {data: accountlimit} = yield getListLimitService()
-    yield put(actions.fulfillAccountLimit(accountlimit.accountlimit))
+    const {data: task_priority} = yield getListLimitService()
+    yield put(actions.fulfillAccountLimit(task_priority.task_priority))
+  })
+  yield takeLatest(actionTypes.RequestPlatformLimit, function* userRequested(param: any) {
+    const {data: platform} = yield getListLimitPlatform()
+    yield put(actions.fulfillPlatformLimit(platform.platform))
+  })
+  yield takeLatest(actionTypes.RequestPlatformLimit, function* userRequested(param: any) {
+    const {data: platform} = yield getListLimitPlatform()
+    yield put(actions.fulfillPlatformLimit(platform.platform))
   })
   yield takeLatest(actionTypes.RequestProxySetting, function* userRequested(param: any) {
-    const {data: proxysetting} = yield getListProxySetting()
-    yield put(actions.fulfillProxySetting(proxysetting.proxysetting))
+    const {data: setting_platform} = yield getListProxySetting()
+    yield put(actions.fulfillProxySetting(setting_platform.setting_platform))
   })
   yield takeLatest(actionTypes.RequestUpdate, function* updateUserRequested(param: any) {
     //console.log("------update account param-----",param.payload.account)
@@ -377,15 +457,21 @@ export function* saga() {
   })
   yield takeLatest(actionTypes.RequestUpdateLimit, function* updateUserRequested(param: any) {
     //console.log("------update account param-----",param.payload.account)
-    const {data: accountlimit} = yield updateAccountLimit(param.payload.accountlimit)
-    console.log("------update account res-----",accountlimit.accountlimit)
-    yield put(actions.updateLimitSuccess(accountlimit.accountlimit))
+    const {data: task_priority} = yield updateAccountLimit(param.payload.task_priority)
+    console.log("------update account res-----",task_priority.task_priority)
+    yield put(actions.updateLimitSuccess(task_priority.task_priority))
+  })
+  yield takeLatest(actionTypes.RequestUpdatePlatformLimit, function* updateUserRequested(param: any) {
+    //console.log("------update account param-----",param.payload.account)
+    const {data: platform} = yield updatePlatformLimit(param.payload.platform)
+    console.log("------update account res-----",platform.platform)
+    yield put(actions.updatePlatformLimitSuccess(platform.platform))
   })
   yield takeLatest(actionTypes.RequestUpdateProxySetting, function* updateUserRequested(param: any) {
     //console.log("------update account param-----",param.payload.account)
-    const {data: proxysetting} = yield updateProxySetting(param.payload.proxysetting)
-    console.log("------update account res-----",proxysetting.proxysetting)
-    yield put(actions.updateProxySettingSuccess(proxysetting.proxysetting))
+    const {data: setting_platform} = yield updateProxySetting(param.payload.setting_platform)
+    console.log("------update account res-----",setting_platform.setting_platform)
+    yield put(actions.updateProxySettingSuccess(setting_platform.setting_platform))
   })
   yield takeLatest(actionTypes.DeleteVpsRequest, function* DeleteVpsRequest(param: any) {
     try {

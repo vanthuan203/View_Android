@@ -47,7 +47,6 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
         state:"",
         time:0,
         price:0
-
     },])
     const [list_service,setList_Service]=useState([{
         id:"000",
@@ -56,17 +55,16 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
 
 
     async function getcounttimeorder() {
-        let  requestUrl = API_URL+'servive/getallservice';
+        let  requestUrl = API_URL+'service/get_List_Service?role='+role;
         const response = await fetch(requestUrl, {
             method: 'get',
             headers: new Headers({
-                'Authorization': '1',
                 'Content-Type': 'application/x-www-form-urlencoded'
             })
         });
         const responseJson = await response.json();
-        const {user} = responseJson;
-        let arrlist =user.split(',');
+        const {service} = responseJson;
+        let arrlist =service.split(',');
         for(var i=0;i<arrlist.length;i++){
             let orderitem = {
                 id: arrlist[i].split('|')[0].trim(),
@@ -239,7 +237,7 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                                     }
                                 </Input>
                             </FormGroup>
-                            {role === "ROLE_ADMIN" &&<FormGroup>
+                            {role != "ROLE_USER" &&<FormGroup>
                                 <Label for="exampleEmail" className="required form-label">
                                     Luồng
                                 </Label>

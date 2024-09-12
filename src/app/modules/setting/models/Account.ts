@@ -1,36 +1,42 @@
 export interface AccountModel {
   id:number
-  pricerate:number,
-  bonus:number,
-  maxorderbuffhus:number,
-  maxorderbuffhvn:number,
-  maxordervn:number,
-  maxorderus:number,
-  threadmin:number,
-  redirectvn:number,
-  redirectus:number,
+  max_acc:number,
+  max_mysql:number,
+  max_profile:number,
+  max_task:number,
+  update_time:number,
   checked?:boolean
 }
 
 export interface AccountLimitModel {
-  id:number
-  user:string,
-  service:number,
-  maxorder:number,
-  maxrunning:number,
-  countorder:number,
-  countdone:number,
+  task:string,
+  priority:number,
+  state:number,
+  platform:string,
+  update_time:number,
   checked?:boolean
 }
+
+export interface PlatformModel {
+  activity:number,
+  priority:number,
+  state:number,
+  platform:string,
+  update_time:number,
+  checked?:boolean
+}
+
+
+
 export interface ProxySettingModel {
-  id:number
-  option_proxy:number,
-  total_port:number,
-  total_sock_port:number,
-  username:string,
-  password:string,
-  cron:string,
-  timeupdate:number,
+  id:string,
+  max_follower:number,
+  max_subscriber:number,
+  max_like:number,
+  max_day_activity:number,
+  max_activity_24h:number,
+  platform:string,
+  update_time:number,
   checked?:boolean
 }
 
@@ -40,15 +46,10 @@ export interface OrderModelChecked {
 
 export interface AccountForm {
   id:number,
-  pricerate:number,
-  bonus:number,
-  maxorderbuffhus:number,
-  maxorderbuffhvn:number,
-  maxordervn:number,
-  maxorderus:number,
-  threadmin:number,
-  redirectvn:number,
-  redirectus:number
+  max_acc:number,
+  max_mysql:number,
+  max_profile:number,
+  max_task:number,
 }
 
 export interface AccountLimitForm {

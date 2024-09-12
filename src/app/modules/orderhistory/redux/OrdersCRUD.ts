@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { postWithoutTokenFunciton,getFunciton,deleteFunciton } from 'utils/ApiHelper'
-import {OrderForm, OrderFormManual, OrderModel, OrderPost} from '../models/Order'
+import {OrderModel} from '../models/Order'
 
 
 
 export async function getListOrder(user:string) {
-  const res:any = await getFunciton("videoview/getorderviewhhistory?user="+user)
+  const res:any = await getFunciton("order_history/get_Order_History?user="+user)
   return res
 }
 
@@ -25,20 +25,6 @@ export async function updateOrder(order:OrderModel) {
   return res
 }
 
-
-export async function addOrder(order:OrderForm) {
-  const res:any = await postWithoutTokenFunciton("",order)
-  return res
-}
-export async function addOrderManual(order:OrderFormManual) {
-  const res:any = await postWithoutTokenFunciton("videobuffh/orderbuffh",order)
-  return res
-}
-
-export async function addOrderMulti(order:OrderPost) {
-  const res:any = await postWithoutTokenFunciton("",order)
-  return res
-}
 export async function bhorderv2( videoid:string) {
   const res = await postWithoutTokenFunciton("videoview/findorder", {
     videoid:videoid
@@ -68,6 +54,6 @@ export async function deleteGroup(id:number) {
 }
 
 export async function deleteChannel(videoid:string) {
-  const res:any = await deleteFunciton("/videobuffh/delete?videoid="+videoid)
+  const res:any = await deleteFunciton("/order_history/delete?videoid="+videoid)
   return res
 }

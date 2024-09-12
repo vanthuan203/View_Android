@@ -1,20 +1,24 @@
 export interface OrderModel {
   id:number,
   balance:number,
-  time:number,
-  totalbalance:number,
+  add_time:number,
+  total_blance:number,
   user:string,
   service:number,
-  geo:string,
-  note:string
+  platform:string,
+  task:string,
+  note:string,
 }
 export interface OrderModelChecked {
+  id:number,
   balance:number,
-  time:string,
-  totalbalance:number,
+  add_time:string,
+  total_blance:number,
   user:string,
+  service:number,
+  platform:string,
+  task:string,
   note:string,
-  id:number
 }
 
 export interface OrderUpdateForm {

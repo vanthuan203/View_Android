@@ -5,26 +5,44 @@ import {OrderForm, OrderFormManual, OrderModel, OrderPost,} from '../models/Orde
 
 
 export async function getListOrder(user:string) {
-  const res:any = await getFunciton("videoview/getorderview?user=baohanh01@gmail.com")
+  const res:any = await getFunciton("order_running/get_Order_Refill?user="+user)
   return res
 }
 
 export async function getOrderFilter(key:string,user:string) {
-  const res:any = await getFunciton("videoview/getorderfilterbuffh?key="+key+'&user='+user)
+  const res:any = await getFunciton("order_running/getorderfilterbuffh?key="+key+'&user='+user)
   return res
 }
 
 export async function getOrderPercentFilter(key:number,user:string) {
-  const res:any = await getFunciton("videoview/getorderbypercentbuffh?key="+key+"&user="+user)
+  const res:any = await getFunciton("order_running/getorderbypercentbuffh?key="+key+"&user="+user)
   return res
 }
-export async function addorderv2( videoid:string,
+export async function addorderv2( link:string,
+                                  quantity:number,
+                                  service:number,
+                                  list:string,
+                                  thread:number,
+                                  note:string
+                                  ) {
+  const res = await postWithoutTokenFunciton("api/web", {
+    link:link,
+    quantity:quantity,
+    service:service,
+    list:list,
+    thread:thread,
+    note:note
+  })
+  return res
+}
+
+export async function addorderbychannelv2( videoid:string,
                                   note:string,
                                   maxthreads:number,
                                   vieworder:number,
                                   service:number,
                                   user:string) {
-  const res = await postWithoutTokenFunciton("videoview/orderview", {
+  const res = await postWithoutTokenFunciton("order_running/orderchannelview", {
     videoid:videoid,
     maxthreads:maxthreads,
     vieworder:vieworder,
@@ -36,59 +54,18 @@ export async function addorderv2( videoid:string,
 }
 
 export async function bhorderv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/bhview", {
-    videoid:videoid
-  })
-  return res
-}
-
-export async function bhordervideoidv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/bhviewbyvideoid", {
-    videoid:videoid
-  })
-  return res
-}
-
-export async function htorderv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/htview", {
-    videoid:videoid
-  })
-  return res
-}
-export async function ht100orderv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/ht100view", {
-    videoid:videoid
-  })
-  return res
-}
-
-export async function htordervideoidv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/htviewbyvideoid", {
-    videoid:videoid
-  })
-  return res
-}
-
-export async function checkbhorderv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/checkbhview", {
-    videoid:videoid
-  })
-  return res
-}
-
-export async function checkbhordervideoidv2( videoid:string) {
-  const res = await postWithoutTokenFunciton("videoview/checkbhvideoidview", {
+  const res = await postWithoutTokenFunciton("order_running/bhview", {
     videoid:videoid
   })
   return res
 }
 
 export async function updateOrder(order:OrderModel) {
-  const res:any = await postWithoutTokenFunciton("videoview/update",order)
+  const res:any = await postWithoutTokenFunciton("order_running/update",order)
   return res
 }
 export async function updateThread(order:OrderModel) {
-  const res:any = await postWithoutTokenFunciton("videoview/updatethread",order)
+  const res:any = await postWithoutTokenFunciton("order_running/updatethread",order)
   return res
 }
 
@@ -97,7 +74,7 @@ export async function addOrder(order:OrderForm) {
   return res
 }
 export async function addOrderManual(order:OrderFormManual) {
-  const res:any = await postWithoutTokenFunciton("videoview/orderbuffh",order)
+  const res:any = await postWithoutTokenFunciton("order_running/orderbuffh",order)
   return res
 }
 
@@ -109,7 +86,7 @@ export async function addOrderMulti(order:OrderPost) {
 
 
 
-export async function deleteChannel(videoid:string,cancel:number) {
-  const res:any = await deleteFunciton("/videoview/delete?videoid="+videoid+'&cancel='+cancel)
+export async function deleteChannel(order_id:string,cancel:number) {
+  const res:any = await deleteFunciton("/order_running/delete_Order_Running?order_id="+order_id+'&cancel='+cancel)
   return res
 }

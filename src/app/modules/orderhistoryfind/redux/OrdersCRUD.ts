@@ -4,8 +4,8 @@ import {OrderForm, OrderFormManual, OrderModel, OrderPost} from '../models/Order
 
 
 
-export async function getListOrder(videoid:string) {
-  const res:any = await getFunciton("videoview/findorder?videoid="+videoid)
+export async function getListOrder(order_key:string) {
+  const res:any = await getFunciton("order_history/find_Order_History?order_key="+order_key)
   return res
 }
 export async function getListOrderCmt(videoid:string) {
@@ -29,19 +29,14 @@ export async function updateSetting(channel_prior:number) {
   return res
 }
 
-export async function updateOrder(orderid:string,mode:number,check:number) {
-  if(mode==0){
-    const res:any = await getFunciton("videoview/updateRefundHis?orderid="+orderid+"&checkview="+check)
+export async function updateOrder(orderid:string,check_current:boolean,check_end_time:boolean) {
+  
+    const res:any = await getFunciton("order_history/refund?order_id="+orderid+"&check_current="+check_current+"&check_end_time="+check_end_time)
     return res
-  }else{
-    const res:any = await getFunciton("videoview/updateRefillHis?orderid="+orderid+"&check_time="+check)
-    return res
-  }
-
 }
 
-export async function updateOrderCmt(orderid:string) {
-  const res:any = await getFunciton("videocomment/updateRefundHis?orderid="+orderid)
+export async function updateOrderRefill(orderid:string) {
+  const res:any = await getFunciton("order_history/refill?order_id="+orderid)
   return res
 }
 

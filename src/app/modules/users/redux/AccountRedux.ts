@@ -3,9 +3,7 @@ import { persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import { put, takeLatest } from 'redux-saga/effects'
 import { AccountModel,AccountForm } from '../models/Account'
-import {getListAccount, updateAccount, deleteVps, updateResetVPS} from './AccountCRUD'
-import {OrderForm, OrderModel} from "../../orders/models/Order";
-import {deleteChannel, updateOrder} from "../../orders/redux/OrdersCRUD";
+import {getListAccount, updateAccount, deleteVps, updateResetVPS,addAccount} from './AccountCRUD'
 export interface ActionWithPayload<T> extends Action {
   payload?: T
 }
@@ -14,6 +12,9 @@ export const actionTypes = {
   RequestAccounts: '[Users] Requested',
   AccountsLoadedSuccess: '[Users] Loaded succcess',
   AccountsLoadedFail: '[Users] load fail',
+  AddAccountRequest: '[Users] Add Account Request',
+  AddAccountSuccess: '[Orderdone] Add Account Success',
+  AddAccountFail: '[Orderdone] Add Account Fail',
   ShowCurrentAccount: '[Users] Show Account',
   RequestUpdate: '[Users] Requested Update',
   UpdateSuccess: '[Users] Update Success',
@@ -108,6 +109,27 @@ export const reducer = persistReducer(
           loading: false
         }
       }
+      case actionTypes.AddAccountRequest: {
+        return {
+          ...state,
+          adding: true
+        }
+      }
+      case actionTypes.AddAccountSuccess: {
+        return {
+          ...state,
+          adding: false,
+          accounts: state.accounts.concat(action.payload?.user)
+        }
+      }
+
+      case actionTypes.AddAccountFail: {
+        return {
+          ...state,
+          adding: false,
+          message: action.payload?.message
+        }
+      }
       case actionTypes.ShowCurrentAccount: {
         return {
           ...state,
@@ -189,6 +211,9 @@ export const actions = {
   requestAccounts: () => ({ type: actionTypes.RequestAccounts }),
   fulfillAccounts: (accounts: AccountModel[]) => ({ type: actionTypes.AccountsLoadedSuccess, payload: { accounts } }),
   loadAccountsFail: (message: string) => ({ type: actionTypes.AccountsLoadedFail, payload: { message } }),
+  addAccountRequest: (data: AccountForm) => ({ type: actionTypes.AddAccountRequest, payload: { data } }),
+  addAccountSuccess: (user: AccountModel[]) => ({ type: actionTypes.AddAccountSuccess, payload: { user } }),
+  addAccountrFail: (message: string) => ({ type: actionTypes.AddAccountFail, payload: { message } }),
   requestUpdate: (account: AccountModel) => ({ type: actionTypes.RequestUpdate, payload: { account } }),
   updateSuccess: (account: AccountModel) => ({ type: actionTypes.UpdateSuccess, payload: { account } }),
   updateFail: (message: string) => ({ type: actionTypes.UpdateFail, payload: { message } }),
@@ -252,6 +277,21 @@ export function* saga() {
       }
     } catch (error) {
       yield put(actions.updateFail(""))
+    }
+  })
+
+  yield takeLatest(actionTypes.AddAccountRequest, function* addOrderRequest(param: any) {
+    const payload = param.payload.data
+    try {
+      const { data: result } = yield addAccount(payload)
+      if (result && result.user) {
+          yield put(actions.addAccountSuccess(result.user))
+      } else {
+        yield put(actions.addAccountrFail(result.message))
+      }
+
+    } catch (error) {
+      yield put(actions.addAccountrFail(""))
     }
   })
 

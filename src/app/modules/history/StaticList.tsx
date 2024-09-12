@@ -23,7 +23,6 @@ const StaticList: React.FC<Props> = ({ className }) => {
   let [totaltimeorder, setTotalTimeOrder] = useState(0)
   let [totaltimeordershow, setTotalTimeOrderShow] = useState(0)
   let [totaltimebuffedorder, setTotalTimeBuffedOrder] = useState(0)
-  const bonus: number = useSelector<RootState>(({ auth }) => auth.user?.bonus, shallowEqual) as number || 0
   const role: string =
       (useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual) as string) || ''
   const user: string =
@@ -62,10 +61,23 @@ async function getbyday(){
       <div className="page-header" style={{backgroundColor:'#c0e1ce'}}>
         <div className="page-header__content">
           <div className="align-items-center row" style={{margin:10}}>
-            <div className="col-lg-8 col-sm-12 c-order__header">
-              <span  className='fw-bolder fs-3 mb-1'>Thống Kê Doanh Thu</span>
+            <div className="col-lg-12 col-sm-12 c-order__header">
               <p style={{fontSize:11,marginTop:5}} className="fw-bold c-order__list">
-                <span ><span className='badge badge-success 1' style={{fontSize:11,color:"black",backgroundColor:"white",marginRight:3,marginBottom:5}}>Tổng đơn {count_order}</span><span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginRight:3,marginBottom:5}}>Tổng tiền {count_money.toFixed(3)}$</span><span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(34,126,231,0.97)",marginRight:3,marginBottom:5}}>Hoàn {count_moneysub.toFixed(3)}$</span><span className='badge badge-success 1' style={{fontSize:11,color:"#fcfcfc",backgroundColor:"rgba(3,37,80,0.97)",marginRight:3,marginBottom:5}}>Còn lại {(count_money-count_moneysub).toFixed(3)}$</span></span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#090909",backgroundColor:"rgb(255,255,255)",marginLeft:5}}>{"Total " +count_order}</span>
+                  </span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(20,122,178,0.66)",marginLeft:5}}>{"Revenue $"+((count_money-count_moneysub).toFixed(Number.isInteger(count_money-count_moneysub)==true?0:2))}
+                  </span>
+                </span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgba(218,30,30,0.97)",marginLeft:5}}>{"Charge $"+(count_money.toFixed(Number.isInteger(count_money)==true?0:2))}
+                  </span>
+                </span>
+                <span  className='fw-bolder fs-3 mb-1'>
+                  <span className='badge badge-success 1' style={{fontSize:12,color:"#fcfcfc",backgroundColor:"rgb(9,9,9)",marginLeft:5}}>{"Refund $"+(count_moneysub.toFixed(Number.isInteger(count_moneysub)==true?0:2))}
+                  </span>
+                </span>
               </p>
             </div>
           </div>

@@ -4,7 +4,6 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { OrderModel } from './models/Order'
 import { RootState } from 'setup'
 import { actions } from './redux/OrdersRedux'
-import EditModal from './modals/EditModal'
 import {FormGroup, Input, Label} from "reactstrap";
 
 const WidgetsPage: React.FC = () => {
@@ -46,9 +45,6 @@ const WidgetsPage: React.FC = () => {
           <OrderList done={1} orders={orders} className='card-xxl-stretch mb-5 mb-xl-12' />
         </div>
       </div>
-      {
-        currentOrder && <EditModal key={currentOrder?.videoid} item={currentOrder}  />
-      }
     </>
   )
 }

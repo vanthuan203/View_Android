@@ -1,36 +1,45 @@
 import axios from 'axios'
 import {postWithoutTokenFunciton, getFunciton, deleteFunciton} from 'utils/ApiHelper'
-import { AccountModel,AccountLimitModel,ProxySettingModel } from '../models/Account'
+import { AccountModel,AccountLimitModel,PlatformModel,ProxySettingModel } from '../models/Account'
 
 
 
 export async function getListAccount() {
-  const res:any = await getFunciton("auth/setting")
+  const res:any = await getFunciton("setting/get_Setting_System")
   return res
 }
 
 export async function getListLimitService() {
-  const res:any = await getFunciton("auth/limitservice")
+  const res:any = await getFunciton("setting/get_Task_Priority")
+  return res
+}
+export async function getListLimitPlatform() {
+  const res:any = await getFunciton("setting/get_List_Platform")
   return res
 }
 export async function getListProxySetting() {
-  const res:any = await getFunciton("proxy/proxysetting")
+  const res:any = await getFunciton("setting/get_Setting_Platform")
   return res
 }
 
 
 export async function updateAccount(account:AccountModel) {
-  const res:any = await postWithoutTokenFunciton("auth/updatesetting",account)
+  const res:any = await postWithoutTokenFunciton("setting/update_Setting_System",account)
   return res
 }
 
-export async function updateAccountLimit(accountlimit:AccountLimitModel) {
-  const res:any = await postWithoutTokenFunciton("auth/updatelimit",accountlimit)
+export async function updateAccountLimit(task_priority:AccountLimitModel) {
+  const res:any = await postWithoutTokenFunciton("setting/update_Task_Priority",task_priority)
   return res
 }
 
-export async function updateProxySetting(proxysetting:ProxySettingModel) {
-  const res:any = await postWithoutTokenFunciton("proxy/updateProxySetting",proxysetting)
+export async function updatePlatformLimit(platform:AccountLimitModel) {
+  const res:any = await postWithoutTokenFunciton("setting/update_Platform",platform)
+  return res
+}
+
+export async function updateProxySetting(setting_platform:ProxySettingModel) {
+  const res:any = await postWithoutTokenFunciton("setting/update_Setting_Platform",setting_platform)
   return res
 }
 

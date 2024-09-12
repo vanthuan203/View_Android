@@ -63,8 +63,6 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   let [useEff, setuseEff] = useState(0)
   const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
   const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
-  const price: number = useSelector<RootState>(({ auth }) => auth.user?.price, shallowEqual) as number || 0
-  const bonus: number = useSelector<RootState>(({ auth }) => auth.user?.bonus, shallowEqual) as number || 0
   const vip: number = useSelector<RootState>(({ auth }) => auth.user?.vip, shallowEqual) as number || 0
   let role: string =
       (useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual) as string) || ''
@@ -73,10 +71,6 @@ const OrderList: React.FC<Props> = ({done,className, orders}) => {
   }
   const user: string =
       (useSelector<RootState>(({auth}) => auth.user?.username, shallowEqual) as string) || ''
-  const groups: Group[] =
-      (useSelector<RootState>(({orders}) => orders.groups, shallowEqual) as Group[]) || []
-  const currentGroup: Group =
-      (useSelector<RootState>(({orders}) => orders.currentGroup, shallowEqual) as Group) || undefined
   let sumtime=0;
   let sumorder=0;
   let summoney=0;

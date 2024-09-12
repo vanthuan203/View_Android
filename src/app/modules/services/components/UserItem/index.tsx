@@ -24,73 +24,141 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
         dispatch(actions.showCurrentAccount(item))
     }
     const clickDeleteHandler = () => {
-        if (window.confirm("Bạn chắc chắn muốn xóa service: "+item.service!) == true) {
+        if (window.confirm("Bạn chắc chắn muốn xóa service: "+item.service_id!) == true) {
             dispatch(actions.deleteVpsRequest(item.geo))
         }
     }
     return (
 
-        <tr style={{margin:100}}>
+        <tr style={{margin:100,backgroundColor:item.enabled==0?"rgba(252,226,207,0.62)":"#ffffff"}}>
             <td className='w-25px'>
-                <span style={{marginLeft:5}} className='text-muted fw-bold text-muted d-block text-sm'>{index+1}</span>
+                <span style={{marginLeft:5}} className='text-muted fw-bold text-muted d-block text-sm'>{item.service_id}</span>
+            </td>
+            <td>
+                <img style={{float:"left",marginRight:5,width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/svg/social-logos/'+item.platform+'.svg')} alt='metronic' />
+            </td>
+            <td>
+                <span style={{fontWeight:"bold",color:"gray"}} ><span  className='badge badge-success' style={{color:"rgb(255,255,255)"
+                }}>{item.mode} </span></span>
+            </td>
+            <td>
+                   <span style={{fontSize:11}}>
+                       <span>
+                        <span style={{fontWeight:"bold",color:"gray"}} >Service Id: <span  className='badge badge-success' style={{color:"rgb(255,255,255)"
+                        }}>{item.service_id} </span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Rate: <span style={{color:"rgba(218,30,30,0.97)"
+                        }}>${item.service_rate} </span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{whiteSpace:"normal",fontWeight:"bold",color:"gray"}}>Name: <span style={{color:"#009ef7"
+                        }}>{item.service_name} </span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Task: <span style={{color:"#bb0707"
+                       }}>{item.task.toUpperCase()}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Type: <span style={{color:"#090909"
+                       }}>{item.service_type}</span></span>
+                    </span>
+                    <br/>
+                </span>
+            </td>
+            <td>
+                   <span style={{fontSize:11}}>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Quantity : <span style={{color:"rgba(218,30,30,0.97)"
+                        }}>{item.min_quantity+"-"+item.max_quantity}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Retention: <span style={{color:"#009ef7"
+                        }}>{item.min_time+"-"+item.max_time+ " minutes"} </span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Max Order: <span style={{color:"#090909"
+                       }}>{item.max_order}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Thread: <span style={{color:"#090909"
+                       }}>{item.thread}</span></span>
+                    </span>
+                    <br/>
+                </span>
             </td>
 
             <td>
-                <span style={{fontSize:11,color:"white",backgroundColor:"#435e57",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.service}</span>
-                <span style={{fontSize:11,color:"white",backgroundColor:"rgba(218,30,30,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.category}</span>
-                <br/>
-                <span style={{fontSize:11,color:"white",backgroundColor:"#b6191a",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.rate}$</span>
-                <span style={{ color:item.checktime>0?'white':'black',fontSize:11,backgroundColor:item.checktime>0?"rgba(218,30,30,0.97)":"#c0e1ce",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.mintime}-{item.maxtime} minutes</span>
-                <br/>
-                <span style={{fontSize:11,color:"white",backgroundColor:"rgba(20,122,178,0.66)",marginRight:5,marginBottom:5}} className='badge badge-success 1' >
-                                        {item.min>=1000?format1(item.min/1000)+"K":item.min}-{item.max>=1000?format1(item.max/1000)+"K":item.max}
+                   <span style={{fontSize:11}}>
+                       <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Bonus: <span style={{color:"rgba(218,30,30,0.97)"
+                        }}>{item.bonus}% </span></span>
                     </span>
-                <span style={{ color:'white',fontSize:11,backgroundColor:"#435e57",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.type}</span>
-            </td>
-            <td >
-                    <span>
-                        {item.suggest>0&&<span style={{ color:'white',fontSize:11,backgroundColor:"#03d96e",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.platform.indexOf("Website")>=0?"Referral":"Suggest"} | <span style={{color:"#ffffff"}}>{item.suggest}%</span></span>}
-                        {item.search>0&&<span style={{ color:'black',fontSize:11,backgroundColor:"#c0dee1",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Search | <span style={{color:"black"}}>{item.search}%</span></span>}
-                        {item.dtn>0&&<span style={{ color:'black',fontSize:11,backgroundColor:"#f1b65f",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Browse features | <span style={{color:"#000000"}}>{item.dtn}%</span></span>}
-                        {item.direct>0&&<span style={{ color:'white',fontSize:11,backgroundColor:"#6d7773",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Direct | <span style={{color:"#ffffff"}}>{item.direct}%</span></span>}
-                        {item.embed>0&&<span style={{ color:'white',fontSize:11,backgroundColor:"#af171b",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Embed | <span style={{color:"#ffffff"}}>{item.embed}%</span></span>}
-                        {item.external>0&&<span style={{ color:'white',fontSize:11,backgroundColor:"rgb(68,134,94)",marginRight:5,marginBottom:5}} className='badge badge-success 1'> {item.platform.indexOf("Website")>=0?"Social":"External"} | {item.external}%</span>}
-                        {item.platform.indexOf("Website")>=0&&<span style={{ color:'white',fontSize:11,backgroundColor:"rgba(218,30,30,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success 1'>CTR | {item.click_web}%</span>}
-                        {item.platform.indexOf("Website")>=0&&<span style={{ color:'white',fontSize:11,backgroundColor:"rgba(220,133,18,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Package | {item.expired} day</span>}
-                        {item.niche==1&&<span style={{ color:'white',fontSize:11,backgroundColor:"rgba(34,126,231,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Topic Videos</span>}
                     <br/>
-                    <span style={{fontSize:10.5,fontWeight:"bold"}}>{item.name}</span>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Check Time : <span style={{color:item.check_time==1?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.check_time==0?"No":"Yes"}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Check Count : <span style={{color:item.check_count==1?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.check_count==0?"No":"Yes"}</span></span>
+                    </span>
+                    <br/>
+                   <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Check Done : <span style={{color:item.check_done==1?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.check_done==0?"No":"Yes"}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}}>Guarantee : <span style={{color:item.refund==1?"rgba(34,126,231,0.97)":"gray"
+                       }}>{item.refund==0?"No":(item.refund_time +" days")}</span></span>
+                    </span>
+                    <br/>
                 </span>
             </td>
-            <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.maxorder}
-                                </text>
+            <td>
+                {item.platform=="youtube"&&<span style={{fontSize:11}}>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Search : <span style={{color:item.youtube_search>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_search+"%"}</span></span>
                     </span>
-            </td>
-            <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.thread}
-                                </text>
+                    <br/>
+                     <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>External : <span style={{color:item.youtube_external>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_external+"%"}</span></span>
                     </span>
+                    <br/>
+                      <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Suggest : <span style={{color:item.youtube_suggest>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_suggest+"%"}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>DTN : <span style={{color:item.youtube_dtn>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_dtn+"%"}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Direct : <span style={{color:item.youtube_direct>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_direct+"%"}</span></span>
+                    </span>
+                     <br/>
+                    <span>
+                        <span style={{fontWeight:"bold",color:"gray"}}>Embed : <span style={{color:item.youtube_embed>0?"rgba(34,126,231,0.97)":"gray"
+                        }}>{item.youtube_embed+"%"}</span></span>
+                    </span>
+                    <br/>
+                </span>}
             </td>
-            <td >
-                                   <span >
-                    {item.geo.indexOf('us')>=0?<img style={{width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/flags/united-states.svg')} alt='metronic' />:item.geo.indexOf('vn')>=0?
-                        <img style={{width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/flags/vietnam.svg')} alt='metronic' />:item.geo.indexOf('kr')>=0?
-                            <img style={{width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/flags/south-korea.svg')} alt='metronic' />:
-                            <span style={{fontSize:11,color:"white",backgroundColor:"rgb(9,9,9)",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.geo.toUpperCase()}</span>}
-                </span>
-            </td>
-            <td >
-                <span style={{fontSize:11,color:"white",backgroundColor:item.enabled===1?"#b7080f":"#9ca1a0",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.enabled===1 ?"ON":"OFF"}</span>
-            </td>
-            <td >
-                <span style={{fontSize:11,color:"white",backgroundColor:item.refill===1?"#00b65c":"#9ca1a0",marginRight:5,marginBottom:5}} className='badge badge-success 1'>{item.refill===1?(item.maxtimerefill==-1?"Lifetime":item.maxtimerefill+" days Refill"):"No Refill"}</span>
-            </td>
-            {role=="ROLE_ADMIN"&&<td>
+            {role!="ROLE_USER"&&<td>
                 <div className='d-flex justify-content-end flex-shrink-0'>
                     <button
                         onClick={()=>clickHandler()}
@@ -100,7 +168,9 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
                     </button>
                 </div>
             </td>}
+
         </tr>
+
     )
 }
 

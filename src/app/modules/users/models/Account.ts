@@ -3,11 +3,13 @@ export interface AccountModel {
   role:string,
   username:string,
   balance:number,
+  password:string,
   discount:number,
-  maxorder:number,
+  max_order:number,
   note:string,
   vip:number,
   rate:number,
+  time_add:number,
   checked?:boolean
 }
 export interface OrderModelChecked {
@@ -18,8 +20,10 @@ export interface OrderModelChecked {
 export interface AccountForm {
   username:string,
   balance:number,
+  password:string,
+  role:string,
   discount:number,
-  maxorder:number,
+  max_order:number,
   note:string,
   rate:number,
   vip:number

@@ -27,7 +27,7 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
             <td>
                 <span>
                     <text style={{fontSize:12,fontWeight:"bold"}} >
-                    {item.bonus}%
+                    {item.max_acc}
                     </text>
                 </span>
 
@@ -35,51 +35,28 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.maxordervn}
+                                        {item.max_mysql}
                                 </text>
                     </span>
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.maxorderus}
+                                        {item.max_profile}
                                 </text>
                     </span>
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.maxorderbuffhvn}
+                                        {item.max_task}
                                 </text>
                     </span>
             </td>
             <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.maxorderbuffhus}
-                                </text>
-                    </span>
-            </td>
-            <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.threadmin}%
-                                </text>
-                    </span>
-            </td>
-            <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold",color:"red"}} >
-                                        {item.redirectvn}/1000
-                                </text>
-                    </span>
-            </td>
-            <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold",color:"red"}} >
-                                        {item.redirectus}/1000
-                                </text>
-                    </span>
+                {item.update_time!=null&&item.update_time>0&&<span style={{color:'black',fontWeight:"bold",fontSize:11}}>
+                        {new Date(item.update_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.update_time).toLocaleTimeString('vn-VN')}
+                    </span>}
             </td>
             <td>
                 <div className='d-flex justify-content-end flex-shrink-0'>

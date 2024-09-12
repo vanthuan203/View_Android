@@ -15,10 +15,10 @@ import { DateRangePicker } from 'rsuite';
 import DatePicker from "react-date-picker";
 type Props = {
   className: string,
-  accounts: AccountModel[]
+  services: AccountModel[]
 }
 
-const UserList: React.FC<Props> = ({ className, accounts }) => {
+const UserList: React.FC<Props> = ({ className, services }) => {
 
   const dispatch = useDispatch()
   const API_URL = process.env.REACT_APP_API_URL
@@ -33,34 +33,31 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
   const [keystatus, setKeyStatus] = useState('')
   const [keystatustrue, setKeyStatusTrue] = useState(0)
   const [key, setKey] = useState("")
-  const [category, setCategory] = useState("Category")
-  const [geo, setGeo] = useState("Geo")
+  const [task, setTask] = useState("Task")
   const [platform, setPlatform] = useState("Platform")
   const [enabled, setEnabled] = useState("1")
   const [type, setType] = useState("Type")
   let [useEff, setuseEff] = useState(0)
   const [nameExport, setNameExport] = useState('Services')
-  const [listcategory,setlistCategory]=useState([{
-    category:"Category"
+  const [listtask,setlistTask]=useState([{
+    task:"Task"
   },])
   const [listplatform,setlistPlatform]=useState([{
     platform:"Platform"
-  },])
-  const [listgeo,setlistGeo]=useState([{
-    geo:"Geo"
   },])
   const [listtype,setlistType]=useState([{
     type:"Type"
   },])
   const role: string =
       (useSelector<RootState>(({auth}) => auth.user?.role, shallowEqual) as string) || ''
-  const isShowFixMulti = accounts.find((item) => {
+  const isShowFixMulti = services.find((item) => {
     if (item.checked) {
 
       return true
     }
     return false
   })
+  console.log(services)
   const [listService,setListService]=useState([{
     id: 0,
     service: 0,
@@ -76,21 +73,18 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
     retention:""
   }])
   async function getOptionService() {
-    let  requestUrl = API_URL+'servive/getOptionService';
+    let  requestUrl = API_URL+'service/get_Option_Service';
     const response = await fetch(requestUrl, {
       method: 'get',
       headers: new Headers({
-        'Authorization': '1',
         'Content-Type': 'application/x-www-form-urlencoded'
       })
     });
-    console.log(response)
     const responseJson = await response.json();
-    const {listType} = responseJson;
-    const {listGeo} = responseJson;
-    const {listPlatform} = responseJson;
-    const {listCategory} = responseJson;
-    let typeList =listType.split(',');
+    const {list_Type} = responseJson;
+    const {list_Platform} = responseJson;
+    const {list_Task} = responseJson;
+    let typeList =list_Type.split(',');
     for(var i=0;i<typeList.length;i++){
       let typeItem = {
         type: typeList[i]
@@ -98,15 +92,8 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
       setlistType([...listtype, typeItem])
       listtype.push(typeItem)
     }
-    let geoList =listGeo.split(',');
-    for(var i=0;i<geoList.length;i++){
-      let geoItem = {
-        geo: geoList[i]
-      }
-      setlistGeo([...listgeo, geoItem])
-      listgeo.push(geoItem)
-    }
-    let platformList =listPlatform.split(',');
+
+    let platformList =list_Platform.split(',');
     for(var i=0;i<platformList.length;i++){
       let platformItem = {
         platform: platformList[i]
@@ -114,20 +101,21 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
       setlistPlatform([...listplatform, platformItem])
       listplatform.push(platformItem)
     }
-    let categoryList =listCategory.split(',');
-    for(var i=0;i<categoryList.length;i++){
-      let categoryItem = {
-        category: categoryList[i]
+    let taskList =list_Task.split(',');
+    for(var i=0;i<taskList.length;i++){
+      let taskItem = {
+        task: taskList[i]
       }
-      setlistCategory([...listcategory, categoryItem])
-      listcategory.push(categoryItem)
+      setlistTask([...listtask, taskItem])
+      listtask.push(taskItem)
     }
   }
 
   useEffect(() => {
-    if(accounts.length!=0){
+    if(services.length!=0){
       setLoading(false)
     }
+    console.log(keytrue)
     totalServiceShow=totalService
     setTotalServiceShow(totalServiceShow)
     setTotalService(0)
@@ -137,7 +125,7 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
     if(useEff<=1){
     getOptionService()
     }
-  },[enabled,keytrue,key,geo,category,type,platform,accounts.length,,]);
+  },[enabled,keytrue,key,task,type,platform,services.length,,]);
 
   async function Export(csvData:OrderModelChecked[],fileName:string){
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -166,24 +154,6 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
               {role==='ROLE_ADMIN'&&<Input style={{margin:10,width:"auto",maxWidth:200,height:40,fontSize:12,backgroundColor:'rgba(57,121,77,0.68)',color:"white",textAlign:"center",float:"right"}}
                   //onChange={(e) => setKeyRate(parseInt(e.target.value))}
                                            onChange={(e) => {
-                                             setGeo(e.target.value)
-                                             //setKeyRate(keyrate)
-                                           }}
-                                           className="form-control form-control-solid"
-                                           type="select"
-                                           value={geo}
-              >
-                {
-                  listgeo.map((item, index) => {
-                    return(
-                        <option key={item.geo.indexOf("All")>=0?"":item.geo} value={item.geo.indexOf("Al")>=0?"":item.geo}>
-                          {item.geo.toUpperCase()}</option>)
-                  })
-                }
-              </Input>}
-              {role==='ROLE_ADMIN'&&<Input style={{margin:10,width:"auto",maxWidth:200,height:40,fontSize:12,backgroundColor:'rgba(57,121,77,0.68)',color:"white",textAlign:"center",float:"right"}}
-                  //onChange={(e) => setKeyRate(parseInt(e.target.value))}
-                                           onChange={(e) => {
                                              setType(e.target.value)
                                              //setKeyRate(keyrate)
                                            }}
@@ -202,18 +172,18 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
               {role==='ROLE_ADMIN'&&<Input style={{margin:10,width:"auto",maxWidth:200,height:40,fontSize:12,backgroundColor:'rgba(57,121,77,0.68)',color:"white",textAlign:"center",float:"right"}}
                   //onChange={(e) => setKeyRate(parseInt(e.target.value))}
                                            onChange={(e) => {
-                                             setCategory(e.target.value)
+                                             setTask(e.target.value)
                                              //setKeyRate(keyrate)
                                            }}
                                            className="form-control form-control-solid"
                                            type="select"
-                                           value={category}
+                                           value={task}
               >
                 {
-                  listcategory.map((item, index) => {
+                  listtask.map((item, index) => {
                     return(
-                        <option key={item.category.indexOf("All")>=0?"":item.category} value={item.category.indexOf("Al")>=0?"":item.category}>
-                          {item.category.toUpperCase()}</option>)
+                        <option key={item.task.indexOf("All")>=0?"":item.task} value={item.task.indexOf("Al")>=0?"":item.task}>
+                          {item.task.toUpperCase()}</option>)
                   })
                 }
               </Input>}
@@ -302,89 +272,88 @@ const UserList: React.FC<Props> = ({ className, accounts }) => {
             {/* begin::Table head */}
             <thead>
               <tr className='fw-bolder text-muted'>
-
-                <th className='w-5px'>STT</th>
-                <th className='min-w-200px '>Service</th>
-                <th className='min-w-500px'>Option</th>
-                <th className='min-w-100px'>MaxOrder</th>
-                <th className='min-w-100px'>Threads</th>
-                <th className='min-w-100px'>Geo</th>
-                <th className='min-w-100px'>Enabled</th>
-                <th className='min-w-100px'>Guarantee</th>
+                <th className='min-w-50px'>ID</th>
+                <th className='min-w-50px '>Platform</th>
+                <th className='min-w-50px '>Mode</th>
+                <th className='min-w-300px '>Info</th>
+                <th className='min-w-200px'>Option</th>
+                <th className='min-w-200px'>Rule</th>
+                <th className='min-w-200px'>Source</th>
               </tr>
             </thead>
             {/* end::Table head */}
             {/* begin::Table body */}
 
             <tbody>
-              {accounts&&
-                  accounts?.map((item: AccountModel,index:number) => {
-                    console.log(geo)
-                    if (keytrue==0&&((geo.indexOf("Geo")>=0?true:item.geo.indexOf(geo)>=0)
-                            &&(type.indexOf("Type")>=0?true:item.type.indexOf(type)>=0))
+              {services&&
+                  services?.map((item: AccountModel,index:number) => {
+                    if (keytrue==0&&((type.indexOf("Type")>=0?true:item.service_type.indexOf(type)>=0))
                         &&(platform.indexOf("Platform")>=0?true:item.platform.indexOf(platform)>=0)
-                        &&(category.indexOf("Category")>=0?true:item.category.indexOf(category)>=0)
+                        &&(task.indexOf("Task")>=0?true:item.task.indexOf(task)>=0)
                         &&(enabled.indexOf("Enabled")>=0?true:item.enabled.toString().indexOf(enabled)>=0)
                     ) {
                       // @ts-ignore
                       totalService=totalService+1;
                       let orderitem = {
                         id: totalService,
-                        service: item.service,
+                        service: item.service_id,
                         platform:item.platform,
-                        category:item.category,
-                        type:item.type,
-                        quantity:item.min+"-"+item.max,
-                        name:item.name,
-                        source:(item.dtn>0?("Browse features "+item.dtn+"%"):"")+
-                            (item.direct>0?(" Direct "+item.direct+"%"):"")+
-                            (item.suggest>0?((item.platform.indexOf("Website")>=0?" Referral ":" Suggest ")+item.suggest+"%"):"")+
-                            (item.external>0?((item.platform.indexOf("Website")>=0?" Social  ":" External")+item.external+"%"):"")+
-                            (item.search>0?(" Search "+item.search+"%"):"")+
-                            (item.embed>0?(" Embed "+item.embed+"%"):"")+
-                            (item.platform.indexOf("Website")>=0?(" CTR "+item.click_web+"%"):"")
+                        category:item.service_category,
+                        type:item.service_type,
+                        quantity:item.min_quantity+"-"+item.max_quantity,
+                        name:item.service_name,
+                        source:(item.youtube_dtn>0?("Browse features "+item.youtube_dtn+"%"):"")+
+                            (item.youtube_direct>0?(" Direct "+item.youtube_direct+"%"):"")+
+                            (item.youtube_suggest>0?((item.platform.indexOf("Website")>=0?" Referral ":" Suggest ")+item.youtube_suggest+"%"):"")+
+                            (item.youtube_external>0?((item.platform.indexOf("Website")>=0?" Social  ":" External")+item.youtube_external+"%"):"")+
+                            (item.youtube_search>0?(" Search "+item.youtube_search+"%"):"")+
+                            (item.youtube_embed>0?(" Embed "+item.youtube_embed+"%"):"")+
+                            (item.platform.indexOf("Website")>=0?(" CTR "+item.website_click_web+"%"):"")
                                 ,
                         geo:item.geo,
-                        rate: item.rate,
-                        guarantee:item.refill==0?("No Refill"):(item.maxtimerefill+" days Refill"),
-                        retention:item.mintime+"-"+item.maxtime+" minutes",
+                        rate: item.service_rate,
+                        guarantee:item.refund==0?("No Refund"):(item.refund_time+" days Refund"),
+                        retention:item.min_time+"-"+item.max_time+" minutes",
                       }
                       listService.push(orderitem)
                       return (
-                          <UserItem key={item.service+index} item={item} index={index} />
+                          <UserItem key={item.service_id+index} item={item} index={index} />
                       )
-                    }else if ((keytrue==1&&(item.service==parseInt(key)))&&((geo.indexOf("Geo")>=0?true:item.geo.indexOf(geo)>=0)
-                            &&(type.indexOf("Type")>=0?true:item.type.indexOf(type)>=0))
+                    }else if (keytrue==1
+                        &&(item.service_id.toString().indexOf(key)>=0 || item.mode.toString().indexOf(key)>=0 )
+                        &&(type.indexOf("Type")>=0?true:item.service_type.indexOf(type)>=0)
                         &&(platform.indexOf("Platform")>=0?true:item.platform.indexOf(platform)>=0)
-                        &&(category.indexOf("Category")>=0?true:item.category.indexOf(category)>=0)
+                        &&(task.indexOf("Task")>=0?true:item.task.indexOf(task)>=0)
                         &&(enabled.indexOf("Enabled")>=0?true:item.enabled.toString().indexOf(enabled)>=0)
                     ) {
+                      console.log(key)
+                      // @ts-ignore
                       // @ts-ignore
                       totalService=totalService+1;
                       let orderitem = {
                         id: totalService,
-                        service: item.service,
+                        service: item.service_id,
                         platform:item.platform,
-                        category:item.category,
-                        type:item.type,
-                        quantity:item.min+"-"+item.max,
-                        name:item.name,
-                        source:(item.dtn>0?("Browse features "+item.dtn+"%"):"")+
-                            (item.direct>0?(" Direct "+item.direct+"%"):"")+
-                            (item.suggest>0?((item.platform.indexOf("Website")>=0?" Referral ":" Suggest ")+item.suggest+"%"):"")+
-                            (item.external>0?((item.platform.indexOf("Website")>=0?" Social  ":" External")+item.external+"%"):"")+
-                            (item.search>0?(" Search "+item.search+"%"):"")+
-                            (item.embed>0?(" Embed "+item.embed+"%"):"")+
-                            (item.platform.indexOf("Website")>=0?(" CTR "+item.click_web+"%"):"")
+                        category:item.service_category,
+                        type:item.service_type,
+                        quantity:item.min_quantity+"-"+item.max_quantity,
+                        name:item.service_name,
+                        source:(item.youtube_dtn>0?("Browse features "+item.youtube_dtn+"%"):"")+
+                            (item.youtube_direct>0?(" Direct "+item.youtube_direct+"%"):"")+
+                            (item.youtube_suggest>0?((item.platform.indexOf("Website")>=0?" Referral ":" Suggest ")+item.youtube_suggest+"%"):"")+
+                            (item.youtube_external>0?((item.platform.indexOf("Website")>=0?" Social  ":" External")+item.youtube_external+"%"):"")+
+                            (item.youtube_search>0?(" Search "+item.youtube_search+"%"):"")+
+                            (item.youtube_embed>0?(" Embed "+item.youtube_embed+"%"):"")+
+                            (item.platform.indexOf("Website")>=0?(" CTR "+item.website_click_web+"%"):"")
                         ,
                         geo:item.geo,
-                        rate: item.rate,
-                        guarantee:item.refill==0?("No Refill"):(item.maxtimerefill+" days Refill"),
-                        retention:item.mintime+"-"+item.maxtime+" minutes",
+                        rate: item.service_rate,
+                        guarantee:item.refund==0?("No Refund"):(item.refund_time+" days Refund"),
+                        retention:item.min_time+"-"+item.max_time+" minutes",
                       }
                       listService.push(orderitem)
                       return (
-                          <UserItem key={item.service+index} item={item} index={index} />
+                          <UserItem key={item.service_id} item={item} index={index} />
                       )
                     }
 

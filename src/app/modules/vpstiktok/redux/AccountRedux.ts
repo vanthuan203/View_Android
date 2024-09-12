@@ -4,8 +4,6 @@ import storage from 'redux-persist/lib/storage'
 import { put, takeLatest } from 'redux-saga/effects'
 import { AccountModel,AccountForm,DeviceModel } from '../models/Account'
 import {getListAccount,getListDevicesByVPS, updateAccount, deleteVps, updateResetVPS} from './AccountCRUD'
-import {OrderForm, OrderModel} from "../../orders/models/Order";
-import {deleteChannel, updateOrder} from "../../orders/redux/OrdersCRUD";
 export interface ActionWithPayload<T> extends Action {
   payload?: T
 }

@@ -23,8 +23,8 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
     const username: string = useSelector<RootState>(({ auth }) => auth.user?.username, shallowEqual) as string || ""
     const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
     const discount: number = useSelector<RootState>(({ auth }) => auth.user?.discount, shallowEqual) as number || 0
-    const adding: boolean = useSelector<RootState>(({ orderbaohanh }) => orderbaohanh.adding, shallowEqual) as boolean || false
-    const groups: Group[] = useSelector<RootState>(({ orderbaohanh }) => orderbaohanh.groups, shallowEqual) as Group[] || []
+    const adding: boolean = useSelector<RootState>(({ orderdone }) => orderdone.adding, shallowEqual) as boolean || false
+    const groups: Group[] = useSelector<RootState>(({ orderdone }) => orderdone.groups, shallowEqual) as Group[] || []
     const API_URL = process.env.REACT_APP_API_URL
     function format1(n:number) {
         return n.toFixed(0).replace(/./g, function(c, i, a) {
@@ -33,21 +33,20 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
     }
 
     const dispatch = useDispatch()
-    const [maxthreads, setMaxthreads] = useState(50)
-    const [videoid, setVideoid] = useState("")
-    const [service, setService] = useState(666)
+    const [thread, setThread] = useState(50)
+    const [link, setLink] = useState("")
+    const [list, setList] = useState("")
+    const [service, setService] = useState(1)
     const [note, setNote] = useState("")
-    const [vieworder, setVieworder] = useState(1000)
+    const [quantity, setQuantity] = useState(1000)
     const [user,setUser]=useState(username)
     const [showorder,setShowOrder]=useState(true)
     const [orderdonenum,setOrderDoneNum]=useState(0)
     const [list_order,setList_Todo]=useState([{
         id:"0000000000",
-        videoid:"",
-        state:"",
-        time:0,
-        price:0
-
+        order_key:"",
+        order_id:0,
+        state:""
     },])
     const [list_service,setList_Service]=useState([{
         id:"000",
@@ -56,17 +55,16 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
 
 
     async function getcounttimeorder() {
-        let  requestUrl = API_URL+'servive/getallservice';
+        let  requestUrl = API_URL+'service/get_List_Service?role='+role;
         const response = await fetch(requestUrl, {
             method: 'get',
             headers: new Headers({
-                'Authorization': '1',
                 'Content-Type': 'application/x-www-form-urlencoded'
             })
         });
         const responseJson = await response.json();
-        const {user} = responseJson;
-        let arrlist =user.split(',');
+        const {service} = responseJson;
+        let arrlist =service.split(',');
         for(var i=0;i<arrlist.length;i++){
             let orderitem = {
                 id: arrlist[i].split('|')[0].trim(),
@@ -82,13 +80,12 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
     const dismissModal = () => {
         close()
         setShowOrder(true)
-        setVideoid("")
+        setLink("")
         let or={
             id:"0000000000",
-            videoid:"",
-            state:"",
-            time:0,
-            price:0
+            order_key:"",
+            order_id:0,
+            state:""
         }
         setList_Todo([or])
         if(orderdonenum>0){
@@ -100,22 +97,21 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
         }
         setOrderDoneNum(0)
     }
-    async function order_video_ver2(video: string) {
-            await addorderv2(video,note,maxthreads,vieworder,service,user)
+    async function order_link_ver2(link: string) {
+            await addorderv2(link,quantity,service,list,thread,note)
                 .then((data: any) => {
-                    if (data.data.videoview == "true") {
+                    if (data.data.order_running == true) {
                         setOrderDoneNum(orderdonenum + 1)
                         let orderitem = {
                             id: randomString(10),
-                            videoid: video,
+                            order_key: link,
                             state: "OK",
-                            time: data.data.time,
-                            price: data.data.price
+                            order_id: data.data.order_id,
                         }
 
                         sumprice = sumprice + data.data.price
                         setSumPrice(sumprice)
-                        sumtime = sumtime + vieworder;
+                        sumtime = sumtime + quantity;
                         setSumTime(sumtime)
                         sumorder = sumorder + 1
                         setSumOrder(sumorder)
@@ -125,10 +121,9 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                     } else {
                         let orderitem = {
                             id: randomString(10),
-                            videoid: video,
-                            time: 0,
-                            state: data.data.videoview,
-                            price: 0
+                            order_key: link,
+                            order_id:0,
+                            state: data.data.error,
                         }
                         setList_Todo([...list_order, orderitem])
                         list_order.push(orderitem)
@@ -138,10 +133,9 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                 .catch(() => {
                     let orderitem = {
                         id: randomString(10),
-                        videoid: video,
+                        order_key: link,
                         state: 'Error',
-                        time: 0,
-                        price: 0
+                        order_id:0,
                     }
                     setList_Todo([...list_order, orderitem])
                     list_order.push(orderitem)
@@ -151,21 +145,21 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
         setSumOrder(0)
         setSumTime(0)
         setSumPrice(0)
-        if (videoid.trim() === "") {
-            alert("VideoId không để trống!")
+        if (link.trim() === "") {
+            alert("Link không để trống!")
             return
         }
 
-        if (vieworder < 100) {
-            alert("Số giờ phải lớn hơn 100!")
+        if (quantity < 100) {
+            alert("Quantity phải lớn hơn 100!")
             return
         }
 
         setShowOrder(false)
-        const videoidlist = videoid.split('\n')
-        for (var i = 0; i < videoidlist.length; i++) {
-            let video = videoidlist[i]
-            await order_video_ver2(video)
+        const list_Link = link.split('\n')
+        for (var i = 0; i < list_Link.length; i++) {
+            let link_index = list_Link[i]
+            await order_link_ver2(link_index)
             await getUserByToken()
         }
     }
@@ -183,7 +177,7 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
             modalTransition={{ timeout: 500 }}>
             <div className="modal-content">
                 <div className="modal-header" style={{display: showorder == true ? "true" : "true"}}>
-                    <h5 className="modal-title">{showorder==true?'Thêm nhiệm vụ với danh sách link video':'Thành công: '+sumorder+' | view: '+format1(sumtime)+' | Giá: '+sumprice.toPrecision()+'$'}</h5>
+                    <h5 className="modal-title">{showorder==true?'Thêm nhiệm vụ với danh sách link':'Total: '+sumorder+' | Quantity: '+format1(sumtime)}</h5>
                     <div className="btn btn-icon btn-sm btn-active-light-primary ms-2" aria-label="Close">
                         <span className="svg-icon svg-icon-2x"></span>
                     </div>
@@ -192,38 +186,38 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                     <Form>
                         <FormGroup>
                             <Label for="exampleEmail" className="required form-label">
-                                Danh sách link video
+                                Danh sách link order
                             </Label>
                             <Input style={{minHeight:250}}
                                 id="list_id"
                                 name="list_id"
                                 className="form-control form-control-solid"
-                                placeholder={"1 link video một dòng..."}
-                                value={videoid}
+                                placeholder={"1 link một dòng..."}
+                                value={link}
                                 type={"textarea"}
-                                onChange={(e) => setVideoid(e.target.value)}
+                                onChange={(e) => setLink(e.target.value)}
                             />
                         </FormGroup>
                         <div>
                             <FormGroup>
                                 <Label for="exampleEmail" className="required form-label">
-                                    Views Order
+                                    Quantity
                                 </Label>
                                 <Input style={{fontWeight:"bold"}}
                                     id="vieworder"
                                     name="vieworder"
-                                    value={vieworder}
+                                    value={quantity}
                                     className="form-control form-control-solid"
                                     placeholder="ví dụ : 100"
-                                    onChange={(e) => setVieworder(parseInt(e.target.value))}
+                                    onChange={(e) => setQuantity(parseInt(e.target.value))}
                                     type="number"
                                 />
                             </FormGroup>
                             <FormGroup>
                                 <Label for="exampleEmail"  className="required form-label">
-                                    Dịch vụ
+                                    Service
                                 </Label>
-                                <Input style={{fontWeight:"bold"}}
+                                <Input  style={{fontSize:12,fontFamily:"sans-serif",fontWeight:"bold",color:"white",backgroundColor:"rgba(20,122,178,0.66)"}}
                                     onChange={(e) => setService(parseInt(e.target.value))}
                                     className="form-control form-control-solid"
                                     type="select"
@@ -233,29 +227,29 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                                         list_service.map((item, index) => {
                                             if(item.id!='000')
                                             return(
-                                                <option key={item.id} value={item.id}>
-                                                    {item.user}</option>)
+                                                <option style={{fontSize:12,fontFamily:"sans-serif",fontWeight:"bold"}} key={item.id} value={item.id}>{item.user}
+                                                    </option>)
                                         })
                                     }
                                 </Input>
                             </FormGroup>
-                            {role === "ROLE_ADMIN" &&<FormGroup>
+                            {role != "ROLE_USER" &&<FormGroup>
                                 <Label for="exampleEmail" className="required form-label">
-                                    Luồng
+                                    Threads
                                 </Label>
                                 <Input style={{fontWeight:"bold"}}
                                     id="max_thread"
                                     name="max_thread"
-                                    value={maxthreads}
+                                    value={thread}
                                     className="form-control form-control-solid"
                                     placeholder="ví dụ : 1000"
-                                    onChange={(e) => setMaxthreads(parseInt(e.target.value))}
+                                    onChange={(e) => setThread(parseInt(e.target.value))}
                                     type="number"
                                 />
                             </FormGroup>}
                             <FormGroup>
                                 <Label for="exampleEmail" >
-                                    Ghi chú
+                                    Note
                                 </Label>
                                 <Input
                                     id="note"
@@ -276,11 +270,10 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
 
                         {
                             list_order.map((item, index) => {
-                                if (item.videoid.length >0) return (
-                                    <ul className="list-group list-group-flush" id={item.videoid} key={item.videoid}>
+                                if (item.order_key.length >0) return (
+                                    <ul className="list-group list-group-flush" id={item.order_key} key={item.order_key}>
                                         <li className="list-group-item" style={{minHeight: 10}}>
                                             <div className="row">
-                                                <div className="col-1 d-flex align-items-center">{index}.</div>
                                                 <div className="col-1 d-flex align-items-center">
                                                             <span className='symbol-label'>
                                                               <img
@@ -291,12 +284,9 @@ const AddManualModal: React.FC<Props> = ({ show, close }) => {
                                                               />
                                                             </span>
                                                 </div>
-                                                <div className="col-3 d-flex align-items-center">{item.videoid}</div>
-                                                <div style={{color:item.state.indexOf('OK')>=0?'green':'red'}} className="col-3 d-flex align-items-center">{item.state}</div>
-                                                <div className="col-1 d-flex align-items-center">{item.time}m</div>
-                                                <div className="col-2 d-flex justify-content-end align-items-center">
-                                                    {item.price.toPrecision()}$
-                                                </div>
+                                                <div className="col-6 d-flex align-items-center">{item.order_key}</div>
+                                                <div style={{color:item.state.indexOf('OK')>=0?'green':'red'}} className="col-2 d-flex align-items-center">{item.state}</div>
+                                                <div className="col-1 d-flex align-items-center">{item.order_id}</div>
                                             </div>
                                         </li>
                                     </ul>

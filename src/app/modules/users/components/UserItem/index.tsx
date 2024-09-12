@@ -50,8 +50,8 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
             </td>
             <td >
                     <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {format1(item.balance)}$
+                                <text style={{fontWeight:"bold",color:"red"}} >
+                                        ${format1(item.balance)}
                                 </text>
                     </span>
             </td>
@@ -72,7 +72,7 @@ const UserItem : React.FC<Props> = ({ item ,index}) => {
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {format1(item.maxorder)}
+                                        {format1(item.max_order)}
                                 </text>
                     </span>
             </td>

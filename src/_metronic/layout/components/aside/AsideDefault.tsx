@@ -27,11 +27,11 @@ const AsideDefault: FC = () => {
       <div className='aside-logo flex-column-auto' id='kt_aside_logo' style={{backgroundColor:"#c0e1ce"}}>
         {/* begin::Logo */}
         {aside.theme === 'dark' && (
-          <Link to='/dashboard'>
+          <Link to='//crafted/orders'>
             <img
               alt='Logo'
               className='h-25px logo'
-              src={toAbsoluteUrl('/media/icons/duotune/general/gen001.svg')}
+              src={toAbsoluteUrl('/media/icons/duotune/social/soc002.svg')}
             />
           </Link>
         )}

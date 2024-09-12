@@ -23,67 +23,111 @@ function format1(n: number) {
 const EditModal: React.FC<Props> = ({item}) => {
     const dispatch = useDispatch()
     const API_URL = process.env.REACT_APP_API_URL
-    const [min, setmin] = useState(item.min)
-    const [max, setmax] = useState(item.max)
-    const [rate, setrate] = useState(item.rate)
-    const [geo, setgeo] = useState(item.geo)
-    const [name, setname] = useState(item.name)
-    const [enabled, setenabled] = useState(item.enabled)
-    const [maxorder, setmaxorder] = useState(item.maxorder)
-    const [search, setsearch] = useState(item.search)
-    const [suggest, setsuggest] = useState(item.suggest)
-    const [dtn, setdtn] = useState(item.dtn)
-    const [direct, setdirect] = useState(item.direct)
-    const [external, setexternal] = useState(item.external)
-    const [embed, setembed] = useState(item.embed)
-    const [mintime, setmintime] = useState(item.mintime)
-    const [maxtime, setmaxtime] = useState(item.maxtime)
-    const [refill, setrefill] = useState(item.refill)
-    const [maxtimerefill, setmaxtimerefill] = useState(item.maxtimerefill)
-    const [thread, setthread] = useState(item.thread)
-    const [type, settype] = useState(item.type)
-    const [live, setlive] = useState(item.live)
-    const [checktime, setchecktime] = useState(item.checktime)
+    const [check_time, set_check_time] = useState(item.check_time)
+    const [device_type, set_device_type] = useState(item.device_type)
+    const [enabled, set_enabled] = useState(item.enabled)
+    const [expired, set_expired] = useState(item.expired)
+    const [max_order, set_max_order] = useState(item.max_order)
+    const [max_quantity, set_max_quantity] = useState(item.max_quantity)
+    const [min_quantity, set_min_quantity] = useState(item.min_quantity)
+    const [max_time, set_max_time] = useState(item.max_time)
+    const [min_time, set_min_time] = useState(item.min_time)
+    const [note, set_note] = useState(item.note)
+    const [geo, set_geo] = useState(item.geo)
+    const [platform, set_platform] = useState(item.platform)
+    const [refund, set_refund] = useState(item.refund)
+    const [refund_time, set_refund_time] = useState(item.refund_time)
+    const [service_category, set_service_category] = useState(item.service_category)
+    const [service_name, set_service_name] = useState(item.service_name)
+    const [service_rate, set_service_rate] = useState(item.service_rate)
+    const [service_type, set_service_type] = useState(item.service_type)
+    const [task, set_task] = useState(item.task)
+    const [thread, set_thread] = useState(item.thread)
+    const [website_click_ads, set_website_click_ads] = useState(item.website_click_ads)
+    const [website_click_web, set_website_click_web] = useState(item.website_click_web)
+    const [youtube_suggest, set_youtube_suggest] = useState(item.youtube_suggest)
+    const [youtube_direct, set_youtube_direct] = useState(item.youtube_direct)
+    const [youtube_dtn, set_youtube_dtn] = useState(item.youtube_dtn)
+    const [youtube_embed, set_youtube_embed] = useState(item.youtube_embed)
+    const [youtube_external, set_youtube_external] = useState(item.youtube_external)
+    const [youtube_key_niche, set_youtube_key_niche] = useState(item.youtube_key_niche)
+    const [youtube_niche, set_youtube_niche] = useState(item.youtube_niche)
+    const [youtube_playlists, set_youtube_playlists] = useState(item.youtube_playlists)
+    const [youtube_reply, set_youtube_reply] = useState(item.youtube_reply)
+    const [youtube_search, set_youtube_search] = useState(item.youtube_search)
+    const [bonus, set_bonus] = useState(item.bonus)
+    const [check_done, set_check_done] = useState(item.check_done)
+    const [check_count, set_check_count] = useState(item.check_count)
 
     const dismissModal = () => {
         dispatch(actions.clearCurrentAccount())
     }
     const updateUser = () => {
-        if (rate < 0) {
-            alert("rate phải lớsn hơn 0!")
+        if (service_rate < 0) {
+            alert("rate không hợp lệ!")
             return
         }
-        if (min < 0) {
-            alert("Giá trị min không hợp lệ!")
+        if (min_time < 0) {
+            alert("min_time không hợp lệ!")
             return
         }
-        if (max < 0) {
-            alert("Giá trị max không hợp lệ!")
+        if (max_time < 0) {
+            alert("max_time không hợp lệ!")
+            return
+        }
+        if (max_quantity < 0) {
+            alert("max_quantity không hợp lệ!")
+            return
+        }
+        if (min_quantity < 0) {
+            alert("min_quantity không hợp lệ!")
+            return
+        }
+        if (thread < 0) {
+            alert("thread không hợp lệ!")
+            return
+        }
+        if (bonus < 0) {
+            alert("bonus không hợp lệ!")
             return
         }
         dispatch(actions.requestUpdate({
             ...item,
-            min,
-            max,
-            rate,
-            name,
-            geo,
+            check_time,
+            device_type,
             enabled,
-            maxorder,
-            search,
-            suggest,
-            dtn,
-            direct,
-            external,
-            embed,
-            mintime,
-            maxtime,
-            maxtimerefill,
-            refill,
+            expired,
+            max_order,
+            max_quantity,
+            min_quantity,
+            max_time,
+            min_time,
+            note,
+            geo,
+            platform,
+            refund,
+            refund_time,
+            service_category,
+            service_name,
+            service_rate,
+            service_type,
+            task,
             thread,
-            type,
-            live,
-            checktime,
+            website_click_ads,
+            website_click_web,
+            youtube_suggest,
+            youtube_direct,
+            youtube_dtn,
+            youtube_embed,
+            youtube_external,
+            youtube_key_niche,
+            youtube_niche,
+            youtube_playlists,
+            youtube_reply,
+            youtube_search,
+            bonus,
+            check_done,
+            check_count,
         }))
     }
 
@@ -93,7 +137,7 @@ const EditModal: React.FC<Props> = ({item}) => {
             <div className="modal-content">
                 <div className="modal-header">
                     <h3 style={{fontWeight: 'bold', fontFamily: 'monospace'}}
-                        className="modal-title">Update Service: {item?.service}</h3>
+                        className="modal-title">Update Service: {item?.service_id}</h3>
                     <div className="btn btn-icon btn-sm btn-active-light-primary ms-2" aria-label="Close">
                         <span className="svg-icon svg-icon-2x"></span>
                     </div>
@@ -103,13 +147,13 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
                             Name Service
                         </Label>
-                        <Input style={{fontWeight: 'bold'}} value={name} type="text" className="form-control"
+                        <Input style={{fontWeight: 'bold'}} value={service_name} type="text" className="form-control"
                                aria-label="Recipient's username" aria-describedby="basic-addon2"
-                               onChange={(e) => setname(e.target.value)}></Input>
+                               onChange={(e) => set_service_name(e.target.value)}></Input>
                     </FormGroup>
 
                 </div>
-                <div className='modal-body flex flex-row justify-between space-x-6'>
+                {item.platform=="youtube"&&<div className='modal-body flex flex-row justify-between space-x-6'>
                     <FormGroup>
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
                             Suggest
@@ -117,10 +161,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="suggest"
                             name="suggest"
-                            value={suggest}
+                            value={youtube_suggest}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setsuggest(parseInt(e.target.value))}
+                            onChange={(e) => set_youtube_suggest(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -131,10 +175,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="search"
                             name="search"
-                            value={search}
+                            value={youtube_search}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setsearch(parseInt(e.target.value))}
+                            onChange={(e) => set_youtube_search(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -143,12 +187,12 @@ const EditModal: React.FC<Props> = ({item}) => {
                             Browse Features
                         </Label>
                         <Input
-                            id="dtn"
-                            name="dtn"
-                            value={dtn}
-                            onChange={(e) => setdtn(parseInt(e.target.value))}
+                            id="suggest"
+                            name="suggest"
+                            value={youtube_dtn}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
+                            onChange={(e) => set_youtube_dtn(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -157,12 +201,12 @@ const EditModal: React.FC<Props> = ({item}) => {
                             External
                         </Label>
                         <Input
-                            id="external"
-                            name="external"
-                            value={external}
-                            onChange={(e) => setexternal(parseInt(e.target.value))}
+                            id="thread"
+                            name="thread"
+                            value={youtube_external}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
+                            onChange={(e) => set_youtube_external(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -171,12 +215,12 @@ const EditModal: React.FC<Props> = ({item}) => {
                             Embed
                         </Label>
                         <Input
-                            id="embed"
-                            name="embed"
-                            value={embed}
-                            onChange={(e) => setembed(parseInt(e.target.value))}
+                            id="suggest"
+                            name="suggest"
+                            value={youtube_embed}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
+                            onChange={(e) => set_youtube_embed(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -185,16 +229,16 @@ const EditModal: React.FC<Props> = ({item}) => {
                             Direct
                         </Label>
                         <Input
-                            id="direct"
-                            name="direct"
-                            value={direct}
-                            onChange={(e) => setdirect(parseInt(e.target.value))}
+                            id="maxtime"
+                            name="maxtime"
+                            value={youtube_direct}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
+                            onChange={(e) => set_youtube_direct(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
-                </div>
+                </div>}
                 <div className='modal-body flex flex-row justify-between space-x-6'>
                     <FormGroup>
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
@@ -203,10 +247,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="suggest"
                             name="suggest"
-                            value={min}
+                            value={min_quantity}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setmin(parseInt(e.target.value))}
+                            onChange={(e) => set_min_quantity(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -217,10 +261,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="search"
                             name="search"
-                            value={max}
+                            value={max_quantity}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setmax(parseInt(e.target.value))}
+                            onChange={(e) => set_max_quantity(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -231,10 +275,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="suggest"
                             name="suggest"
-                            value={maxorder}
+                            value={max_order}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setmaxorder(parseInt(e.target.value))}
+                            onChange={(e) => set_max_order(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -248,7 +292,7 @@ const EditModal: React.FC<Props> = ({item}) => {
                             value={thread}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setthread(parseInt(e.target.value))}
+                            onChange={(e) => set_thread(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -259,10 +303,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="suggest"
                             name="suggest"
-                            value={mintime}
+                            value={min_time}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setmintime(parseInt(e.target.value))}
+                            onChange={(e) => set_min_time(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -273,79 +317,40 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="maxtime"
                             name="maxtime"
-                            value={maxtime}
+                            value={max_time}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setmaxtime(parseInt(e.target.value))}
+                            onChange={(e) => set_max_time(parseInt(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
                 </div>
 
 
-                <div className='modal-body flex flex-row justify-between space-x-8'>
+                <div className='modal-body flex flex-row justify-between space-x-6'>
                     <FormGroup>
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
-                            Live-Pre
-                        </Label>
-                        <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => setlive(parseInt(e.target.value))}
-                               className="form-control form-control-solid"
-                               type="select"
-                               value={live}
-                        >
-                            <option key={"0"} value={0}>
-                                No
-                            </option>
-                            <option key={"1"} value={1}>
-                                Yes
-                            </option>
-                        </Input>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
-                            Geo
+                            Bonus(%)
                         </Label>
                         <Input
-                            id="thread"
-                            name="thread"
-                            value={geo}
+                            id="suggest"
+                            name="suggest"
+                            value={bonus}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setgeo(e.target.value)}
-                            type="text"
+                            onChange={(e) => set_bonus(parseInt(e.target.value))}
+                            type="number"
                         />
-                    </FormGroup>
-                    <FormGroup>
-                        <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
-                            Type Service
-                        </Label>
-                        <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => settype(e.target.value)}
-                               className="form-control form-control-solid"
-                               type="select"
-                               value={type}
-                        >
-                            <option key={"Default"} value={"Default"}>
-                                Default
-                            </option>
-                            <option key={"Special"} value={"Special"}>
-                                Special
-                            </option>
-                            <option key={"Custom Comments"} value={"Custom Comments"}>
-                                Custom Comments
-                            </option>
-                        </Input>
                     </FormGroup>
                     <FormGroup>
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
                             Guarantee
                         </Label>
                         <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => setrefill(parseInt(e.target.value))}
+                               onChange={(e) => set_refund(parseInt(e.target.value))}
                                className="form-control form-control-solid"
                                type="select"
-                               value={refill}
+                               value={refund}
                         >
                             <option key={"1"} value={1}>
                                 Yes Guarantee
@@ -357,33 +362,36 @@ const EditModal: React.FC<Props> = ({item}) => {
                     </FormGroup>
                     <FormGroup>
                         <Label style={{fontWeight: 'bold'}} for="exampleEmail" className="required form-label">
-                            Max Day Refill
+                            Day Refund
                         </Label>
                         <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => setmaxtimerefill(parseInt(e.target.value))}
+                               onChange={(e) => set_refund_time(parseInt(e.target.value))}
                                className="form-control form-control-solid"
                                type="select"
-                               value={maxtimerefill}
+                               value={refund_time}
                         >
                             <option key={"0"} value={0}>
-                                No Refill
+                                No Refund
+                            </option>
+                            <option key={"3"} value={3}>
+                                3 days Refund
                             </option>
                             <option key={"7"} value={7}>
-                                7 days Refill
+                                7 days Refund
                             </option>
                             <option key={"15"} value={15}>
-                                15 days Refill
+                                15 days Refund
                             </option>
                             <option key={"30"} value={30}>
-                                30 days Refill
+                                30 days Refund
                             </option>
                             <option key={"60"} value={60}>
-                                60 days Refill
+                                60 days Refund
                             </option>
                             <option key={"90"} value={90}>
-                                90 days Refill
+                                90 days Refund
                             </option>
-                            <option key={"-1"} value={-1}>
+                            <option key={"100000"} value={100000}>
                                 Lifetime
                             </option>
                         </Input>
@@ -393,10 +401,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                             Check Time
                         </Label>
                         <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => setchecktime(parseInt(e.target.value))}
+                               onChange={(e) => set_check_time(parseInt(e.target.value))}
                                className="form-control form-control-solid"
                                type="select"
-                               value={checktime}
+                               value={check_time}
                         >
                             <option key={"1"} value={1}>
                                 Yes
@@ -413,10 +421,10 @@ const EditModal: React.FC<Props> = ({item}) => {
                         <Input
                             id="rate"
                             name="rate"
-                            value={rate}
+                            value={service_rate}
                             className="form-control form-control-solid"
                             placeholder="ví dụ : 100"
-                            onChange={(e) => setrate(parseFloat(e.target.value))}
+                            onChange={(e) => set_service_rate(parseFloat(e.target.value))}
                             type="number"
                         />
                     </FormGroup>
@@ -425,7 +433,7 @@ const EditModal: React.FC<Props> = ({item}) => {
                             Enabled
                         </Label>
                         <Input style={{fontWeight: "bold"}}
-                               onChange={(e) => setenabled(parseInt(e.target.value))}
+                               onChange={(e) => set_enabled(parseInt(e.target.value))}
                                className="form-control form-control-solid"
                                type="select"
                                value={enabled}

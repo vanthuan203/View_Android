@@ -25,52 +25,40 @@ const ProxySettingItem : React.FC<Props> = ({ item ,index}) => {
 
         <tr>
             <td>
-                <span>
-                    <text style={{fontSize:12,fontWeight:"bold"}} >
-                    {item.option_proxy}
-                    </text>
-                </span>
-
+               <img style={{width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/svg/social-logos/'+item.platform+'.svg')} alt='metronic' />
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.username}
+                                        {item.max_follower}
                                 </text>
                     </span>
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.password}
+                                        {item.max_like}
                                 </text>
                     </span>
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.cron}
+                                        {item.max_activity_24h}
                                 </text>
                     </span>
             </td>
             <td >
                     <span style={{fontSize:11}} >
                                 <text style={{fontWeight:"bold"}} >
-                                        {item.total_port}
+                                        {item.max_day_activity}
                                 </text>
                     </span>
             </td>
             <td >
-                    <span style={{fontSize:11}} >
-                                <text style={{fontWeight:"bold"}} >
-                                        {item.total_sock_port}
-                                </text>
-                    </span>
-            </td>
-            <td >
-                    <span style={{color:'black',fontWeight:"bold",fontSize:11}}>
-                        {new Date(item.timeupdate).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.timeupdate).toLocaleTimeString('vn-VN')}
-                    </span>
+                {item.update_time!=null&&item.update_time>0&&<span style={{color:'black',fontWeight:"bold",fontSize:11}}>
+                        {new Date(item.update_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.update_time).toLocaleTimeString('vn-VN')}
+                    </span>}
             </td>
             <td>
                 <div className='d-flex justify-content-end flex-shrink-0'>

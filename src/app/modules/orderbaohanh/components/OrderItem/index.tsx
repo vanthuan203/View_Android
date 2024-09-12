@@ -35,9 +35,9 @@ const OrderItem: React.FC<Props> = ({ item, showEdit, index }) => {
         dispatch(actions.showcurrentOrder(item))
     }
     const clickDeleteHandler = () => {
-        if (window.confirm("bạn có chắc chắn muốn xóa đơn : "+item.videoid!
+        if (window.confirm("Bạn có chắc chắn muốn xóa đơn : "+item.order_id!
     ) == true) {
-            dispatch(actions.deleteOrderRequest(item.videoid,1))
+            dispatch(actions.deleteOrderRequest(item.order_id.toString(),1))
         }
     }
     //const subNeedRun = item.view_need - (item.current_view - item.start_view)
@@ -49,7 +49,7 @@ const OrderItem: React.FC<Props> = ({ item, showEdit, index }) => {
                     <input
                         onChange={(evt)=>{
                             dispatch(actions.checkedChange({
-                                videoid:item.videoid,
+                                order_id:item.order_id,
                                 checked:evt.target.checked
                             }))
                         }}
@@ -66,71 +66,138 @@ const OrderItem: React.FC<Props> = ({ item, showEdit, index }) => {
                 <span className='text-muted fw-bold text-muted d-block text-sm'>{index}</span>
             </td>
             <td>
-                <a  target="_blank" style={{textDecorationLine:'none',fontSize:11,backgroundColor:item.service>1000?"rgba(3,37,80,0.97)":(item.service<600?"rgba(34,126,231,0.97)":"#b7080f"),marginRight:5,marginBottom:5,color:"white",}} href={API_URL+'videoview/getinfo?orderid=' + item.orderid} className='badge badge-danger'>
-                    {item.orderid}
-                </a>
+                    <span style={{ color:'white',fontSize:11,padding:2,backgroundColor:"rgba(0,0,0,0.63)"}} className='badge badge-success'>{item.order_id}</span>
             </td>
             <td>
+                <img style={{float:"left",marginRight:5,width:20,height:20,borderImage:"-moz-initial"}} src={toAbsoluteUrl('/media/svg/social-logos/'+item.platform+'.svg')} alt='metronic' />
 
-                <a  target="_blank" style={{textDecorationLine:'none',fontSize:11,backgroundColor:"#03d96e",marginRight:5,marginBottom:5,color:"white",}} href={'https://www.youtube.com/watch?v=' + item.videoid} className='badge badge-danger'>
-                    {item.videoid}
-                </a>
-                <span>
-                    <span style={{ color:'black',fontSize:11,backgroundColor:"rgba(241,133,133,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success 1'><span style={{color:"rgb(9,9,9)"}}>{item.price==null?0:item.price.toPrecision()}</span>$</span>
-                    <span style={{ color:'white',fontSize:11,backgroundColor:"#03d96e",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Order <span style={{color:"#ffffff"}}>{item.vieworder}</span></span>
-                    <span style={{ color:'black',fontSize:11,backgroundColor:"#c0e1ce",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Start <span style={{color:"black"}}>{item.viewstart}</span></span>
-                    <span style={{ color:'black',fontSize:11,backgroundColor:"#c0e1ce",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Total <span style={{color:"#000000"}}>{item.viewtotal==null?0:item.viewtotal}</span></span>
-                    <span style={{ color:'white',fontSize:11,backgroundColor:Math.round((Math.round(Number(item.viewtotal==null?0:item.viewtotal))/item.vieworder*100))>=100?"rgba(234,100,100,0.97)":"#26695c",marginRight:5,marginBottom:5}} className='badge badge-success 1'>Completed <span style={{color:"#fafafa"}}>{Math.round((Math.round(Number(item.viewtotal==null?0:item.viewtotal))/item.vieworder*100))+'%'}</span></span>
+
+            </td>
+            <td >
+                <span style={{fontSize:11
+                }}>
+                     <span >
+                       <span style={{color:"#009ef7"}}>
+                           <a  target="_blank" style={{fontWeight:"bold",marginRight:5,marginBottom:5,color:"#b41313",}}
+                               href={item.order_link}
+                           >
+                        {item.order_key}</a>
+                                                   <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"rgba(0,0,0,0.97)",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                            {item.task.charAt(0).toUpperCase()}
+                        </span>
+                       </span>
+                    </span>
                     <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Charge: <span style={{color:"#009ef7"
+                       }}>${item.charge} </span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Quantity: <span style={{color:"#090909"
+                       }}>{item.quantity} </span></span>
+                    </span>
+                     <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"rgba(20,122,178,0.66)",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                            {item.bonus}%
+                        </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Start count: <span style={{color:"#090909"
+                       }}>{item.start_count}</span></span>
+                    </span>
+                    <br/>
+                    <span>
+                       <span style={{fontWeight:"bold",color:"gray"}} >Total: <span style={{color:"#090909"
+                       }}>{item.total}/{item.quantity+Math.round(item.bonus*item.quantity/100)} </span></span>
+                        <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"#03d96e",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                            {Math.round((item.total/(item.quantity+Math.round(item.bonus*item.quantity/100)))*100)}%
+                        </span>
+                    </span>
                 </span>
 
             </td>
             {role!="ROLE_USER"&&<td className='text-dark fw-bolder text-hover-primary text-sm'>
-                {loading ? <span className='text-muted fw-bold text-muted d-block text-sm'>
-                    {"Đang lấy dữ liệu"}
-                </span> :
-                    <span style={{color:'black',fontSize:11,backgroundColor:item.total!=0?"#c0e1ce":"#dc7a30"}} className='badge badge-dark'>{item.total}/{item.maxthreads}</span>
-                }
+                    <span style={{color:'black',fontSize:10,backgroundColor:item.total_thread!=0?"#c0e1ce":"#dc7a30",padding:3,marginRight:5,marginBottom:5}} className='badge badge-dark'>{item.total_thread}/{item.thread}</span>
             </td>}
             <td>
-                {//{item.service<600?<img style={{width:20,height:20,marginRight:5,marginBottom:5,borderImage:"-moz-initial",float:"left",borderRadius:3}} src={toAbsoluteUrl('/media/flags/united-states.svg')} alt='metronic' />:
-                    //    <img style={{width:20,height:20,marginRight:5,marginBottom:5,borderImage:"-moz-initial",float:"left",borderRadius:3}} src={toAbsoluteUrl('/media/flags/vietnam.svg')} alt='metronic' />}
-                }
-                <span style={{color:'white',fontSize:11,backgroundColor:item.service>1000?"rgba(3,37,80,0.97)":(item.service<600?"rgba(34,126,231,0.97)":"#b7080f")}} className='badge badge-success'>
-                  {item.service}</span>
-                {
-                    <span style={{color:'black',fontWeight:"bold",fontSize:11,margin:5}} >{new Date(item.insertdate).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.insertdate).toLocaleTimeString('vn-VN')}</span>
-                }
+
+                <span style={{color:'white',fontSize:10,backgroundColor:"#b7080f",padding:3,marginRight:5,marginBottom:5}} className='badge badge-success'>
+                  {item.service_id} </span>
+                <span style={{color:'white',fontSize:10,padding:3,marginRight:5,marginBottom:5}} className='badge badge-success'>
+                            {item.task.toUpperCase()}
+                        </span>
+                <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"rgba(31,155,229,0.66)",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                  {((Date.now()-item.start_time)/1000/60/60)>=24?((((Date.now()-item.start_time)/1000/60/60/24)).toFixed(2)+'D'):((Date.now()-item.start_time)/1000/60/60)>=1?((Date.now()-item.start_time)/1000/60/60).toFixed(2)+'H':((Date.now()-item.start_time)/1000/60).toFixed(2)+'m'}</span>
 
             </td>
             <td>
-                {//{item.service<600?<img style={{width:20,height:20,marginRight:5,marginBottom:5,borderImage:"-moz-initial",float:"left",borderRadius:3}} src={toAbsoluteUrl('/media/flags/united-states.svg')} alt='metronic' />:
-                    //    <img style={{width:20,height:20,marginRight:5,marginBottom:5,borderImage:"-moz-initial",float:"left",borderRadius:3}} src={toAbsoluteUrl('/media/flags/vietnam.svg')} alt='metronic' />}
-                }
-                <span style={{color:'white',fontSize:11,backgroundColor:"#03d96e"}} className='badge badge-success'>
-                  {((Date.now()-item.timestart)/1000/60/60)>=24?((((Date.now()-item.timestart)/1000/60/60/24)).toFixed(2)+'D'):((Date.now()-item.timestart)/1000/60/60)>=1?((Date.now()-item.timestart)/1000/60/60).toFixed(2)+'H':((Date.now()-item.timestart)/1000/60).toFixed(0)+'m'}</span>
-                {
-                    <span style={{color:'black',fontWeight:"bold",fontSize:11,margin:5}} >{new Date(item.timestart).toLocaleDateString('vn-VN').replace("/2024","") +" "+ new Date(item.timestart).toLocaleTimeString('vn-VN')}</span>
-                }
+                <span style={{fontSize:11}}>
+                <span>
+                    <span style={{fontWeight:"bold",color:"gray"}} >Insert: <span style={{color:"#009ef7"
+                       }}><span style={{color:'#090909',fontWeight:"bold",fontSize:11,marginRight:5,marginBottom:5}} >{new Date(item.insert_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+new Date(item.insert_time).toLocaleTimeString('vn-VN')}</span>
+                    </span>
+                    </span>
+                    </span>
+                <br/>
+                <span>
+                    <span style={{fontWeight:"bold",color:"gray"}} >Start: <span style={{color:"#009ef7"
+                    }}><span style={{color:'rgba(34,126,231,0.97)',fontWeight:"bold",fontSize:11,marginRight:5,marginBottom:5}} >{new Date(item.start_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+new Date(item.start_time).toLocaleTimeString('vn-VN')}</span>
+                    </span>
+                    </span>
+                    </span>
+                <br/>
+                    {item.update_time!=null&&item.update_time>0&&<span>
+                    <span style={{fontWeight:"bold",color:"gray"}} >Update: <span><span style={{color:"#009ef7"
+                    }}><span style={{color:'#d20a12',fontWeight:"bold",fontSize:11,marginRight:5,marginBottom:5}} >{new Date(item.update_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+new Date(item.update_time).toLocaleTimeString('vn-VN')}</span>
+                    </span>
+                    </span>
+                    </span></span>}
+                    <br/>
+                    {item.update_current_time!=null&&item.update_current_time>0&&<span>
+                    <span style={{fontWeight:"bold",color:"gray"}} >Current: <span><span style={{color:"#009ef7"
+                    }}><span style={{color:'rgba(159,94,8,0.97)',fontWeight:"bold",fontSize:11,marginRight:5,marginBottom:5}} >{new Date(item.update_current_time).toLocaleDateString('vn-VN').replace("/2024","") +" "+new Date(item.update_current_time).toLocaleTimeString('vn-VN')}</span>
+                    </span>
+                    </span>
+                    </span></span>}
+                </span>
+
 
             </td>
             {role!="ROLE_USER"&&<td>
-                <span style={{color:'black',fontSize:11,fontWeight:'bold'}} >{item.user.replace("@gmail.com","")}</span>
+                <span className='badge badge-success' style={{color:'black',fontSize:11,fontWeight:'bold',marginRight:5,marginBottom:5,backgroundColor:"white"}} >{item.username.replace("@gmail.com","")}</span>
             </td>}
             <td>
-                <span style={{overflow:"hidden",maxWidth:100,color:'black',fontSize:11,fontWeight:'bold'}} >{item.note}</span>
+                <span className='badge badge-success' style={{whiteSpace:"inherit",textAlign:"left",maxWidth:150,color:'black',fontSize:11,fontWeight:'normal',backgroundColor:"white"}} >{item.note}</span>
             </td>
 
-            {
-                <td >
-                    <a href='#' onClick={clickUpdateHandler} className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm mr-5'>
+            {role!="ROLE_USER"&&<td className='text-dark fw-bolder text-hover-primary text-sm'>
+                {item.total>0&&item.check_count==1&&<span>
+                        <span style={{color:'black',fontSize:10,backgroundColor:item.total!=0?"#c0e1ce":"#dc7a30",marginRight:5,marginBottom:5}} className='badge badge-dark'>{item.current_count}/{item.start_count+item.total}</span>
+                        <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"#03d96e",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                                    {Math.round(((item.current_count-item.start_count)/item.total)*100)}%
+                        </span>
+                        <span style={{color:'white',fontSize:10,padding:2,backgroundColor:"rgba(31,155,229,0.66)",marginRight:5,marginBottom:5}} className='badge badge-success'>
+                  {((Date.now()-item.update_current_time)/1000/60/60)>=24?((((Date.now()-item.update_current_time)/1000/60/60/24)).toFixed(2)+'D'):((Date.now()-item.update_current_time)/1000/60/60)>=1?((Date.now()-item.update_current_time)/1000/60/60).toFixed(2)+'H':((Date.now()-item.update_current_time)/1000/60).toFixed(2)+'m'}</span>
+                    </span>}
+            </td>}
+            {role!="ROLE_USER"&&<td>
+                <div className='d-flex justify-content-end flex-shrink-0'>
+                    <button
+                        onClick={clickUpdateHandler}
+                        className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
+                    >
                         <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
-                    </a>
-                    {role==='ROLE_ADMIN'&&<a href='#' onClick={clickDeleteHandler} className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'>
+                    </button>
+                    <button
+                        onClick={clickDeleteHandler}
+                        className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
+                    >
                         <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
-                    </a>}
-                </td>
-            }
+                    </button>
+                </div>
+            </td>}
+
+
         </tr>
     )
 }

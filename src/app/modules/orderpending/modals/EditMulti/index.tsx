@@ -1,5 +1,5 @@
 import React, {useState, useEffect, ReactChild} from 'react'
-import {OrderModel, OrderModelChecked} from 'app/modules/orderpending/models/Order'
+import {OrderModel, OrderModelChecked} from 'app/modules/orderdone/models/Order'
 import { actions } from '../../redux/OrdersRedux'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
@@ -19,17 +19,15 @@ type Props = {
     close: () => void
 }
 const EditMulti: React.FC<Props> = ({ listvieoid,show,close }) => {
-    console.log(listvieoid);
     const role: string = useSelector<RootState>(({ auth }) => auth.user?.role, shallowEqual) as string || ""
     const username: string = useSelector<RootState>(({ auth }) => auth.user?.username, shallowEqual) as string || ""
     const balance: number = useSelector<RootState>(({ auth }) => auth.user?.balance, shallowEqual) as number || 0
-    const adding: boolean = useSelector<RootState>(({ orderpending }) => orderpending.adding, shallowEqual) as boolean || false
-    const groups: Group[] = useSelector<RootState>(({ orderpending }) => orderpending.groups, shallowEqual) as Group[] || []
-    const orders: OrderModel[] = useSelector<RootState>(({ orderpending }) => orderpending.orders, shallowEqual) as OrderModel[] || []
+    const adding: boolean = useSelector<RootState>(({ orderdone }) => orderdone.adding, shallowEqual) as boolean || false
+    const groups: Group[] = useSelector<RootState>(({ orderdone }) => orderdone.groups, shallowEqual) as Group[] || []
+    const orders: OrderModel[] = useSelector<RootState>(({ orderdone }) => orderdone.orders, shallowEqual) as OrderModel[] || []
 
     const dispatch = useDispatch()
     const [maxthreads, setMaxthreads] = useState(200)
-    const [priority, setPriority] = useState(0)
     const [videoid, setVideoid] = useState("")
     //const [list_video, setList_video] = useState("")
     //
@@ -55,20 +53,20 @@ const EditMulti: React.FC<Props> = ({ listvieoid,show,close }) => {
     const dismissModal = () => {
         dispatch(actions.clearcurrentOrder())
     }
-    const arr:string[]=[]
+    const arr:number[]=[]
     orders.forEach(item=>{
-        const myElem = listvieoid.find(value => value.videoid===item.videoid)
+        const myElem = listvieoid.find(value => value.order_id==item.order_id)
         if(myElem && item.checked){
-            arr.push(item.videoid)
+            arr.push(item.order_id)
         }
     })
     console.log(arr)
     const submit = () => {
-        const arr:string[]=[]
+        const arr:number[]=[]
         orders.forEach(item=>{
-            const myElem = listvieoid.find(value => value.videoid===item.videoid)
+            const myElem = listvieoid.find(value => value.order_id===item.order_id)
             if(myElem && item.checked){
-                arr.push(item.videoid)
+                arr.push(item.order_id)
             }
         })
         console.log(arr)
@@ -102,8 +100,7 @@ const EditMulti: React.FC<Props> = ({ listvieoid,show,close }) => {
             timebuff,
             user,
             service,
-            vieworder,
-            priority
+            vieworder
         }))
      
     }
@@ -157,14 +154,14 @@ const EditMulti: React.FC<Props> = ({ listvieoid,show,close }) => {
                             </FormGroup>}
                             {role === "ROLE_ADMIN"&&<FormGroup>
                                 <Label for="exampleEmail" className="required form-label">
-                                    Mức ưu tiên
+                                    Luồng
                                 </Label>
                                 <Input //disabled={role === "ROLE_ADMIN" ? false : true}
                                     id="max_thread"
                                     name="max_thread"
-                                    value={priority}
+                                    value={maxthreads}
                                     className="form-control form-control-solid"
-                                    onChange={(e) => setPriority(parseInt(e.target.value))}
+                                    onChange={(e) => setMaxthreads(parseInt(e.target.value))}
                                     type="number"
                                 />
                             </FormGroup>}
